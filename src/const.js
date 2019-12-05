@@ -1,2 +1,3 @@
+const MAX_RATING = 9;
 
-export { };
+export { MAX_RATING };

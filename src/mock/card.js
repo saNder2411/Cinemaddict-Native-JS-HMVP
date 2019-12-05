@@ -1,3 +1,4 @@
+import { MAX_RATING } from '../const.js';
 import { getRandomNumberFromPeriod, getRandomBoolean, getRandomDate } from '../utils.js';
 
 const TITLES = [
@@ -36,17 +37,10 @@ const ACTORS = [
   `Judi Dench`, `Robert De Niro`, `Leonardo DiCaprio`, `Morgan Freeman`, `Tom Hanks`, `Anthony Hopkins`,
   `Samuel L. Jackson`, `Frances McDormand`, `Liam Neeson`, `Denzel Washington`, `Will Smith`
 ];
-// const MONTHS = [
-//   `January`, `February`, `March`, `April`, `May`, `June`, `July`,
-//   `August`, `September`, `October`, `November`, `December`
-// ];
 const COUNTRY = [`USA`, `Italy`, `France`, `Germany`, `British`];
-const MAX_RATING = 10;
 const AGE_LIMIT_MAX = 18;
 
 const getRandomRating = (maxRating, minRating = 5) => `${getRandomNumberFromPeriod(maxRating, minRating)}.${getRandomNumberFromPeriod(maxRating)}`;
-
-// const getRandomReleaseDate = (date = getRandomDate()) => `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
 
 const getRandomRuntime = () => {
   const minutes = getRandomNumberFromPeriod(60);
@@ -64,8 +58,8 @@ const generateCard = () => {
     poster: URL_POSTERS[getRandomNumberFromPeriod(URL_POSTERS.length)],
     ageLimit: `${getRandomNumberFromPeriod(AGE_LIMIT_MAX + 1, 7)}`,
     title: TITLES[getRandomNumberFromPeriod(TITLES.length)],
-    rating: getRandomRating(MAX_RATING),
-    yourRate: getRandomNumberFromPeriod(MAX_RATING),
+    rating: getRandomRating(MAX_RATING + 1),
+    yourRate: getRandomNumberFromPeriod(MAX_RATING + 1),
     director: DIRECTORS[getRandomNumberFromPeriod(DIRECTORS.length)],
     writers: WRITERS.filter(getRandomBoolean).slice(0, getRandomNumberFromPeriod(4, 1)).join(`, `),
     actors: ACTORS.filter(getRandomBoolean).slice(0, getRandomNumberFromPeriod(4, 1)).join(`, `),
