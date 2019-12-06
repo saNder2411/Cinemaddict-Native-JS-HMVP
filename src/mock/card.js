@@ -68,7 +68,7 @@ const generateCard = () => {
     country: COUNTRY[getRandomNumberFromPeriod(COUNTRY.length)],
     genres: GENRES.filter(getRandomBoolean).slice(2, 6),
     descriptions: DESCRIPTIONS,
-    amountComments: getRandomNumberFromPeriod(1000),
+    amountComments: getRandomNumberFromPeriod(500),
     watchList: getRandomBoolean(),
     watched: getRandomBoolean(),
     favorite: getRandomBoolean(),
