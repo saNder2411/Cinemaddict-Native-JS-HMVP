@@ -1,5 +1,6 @@
 const createUserRankTemplate = (amountWatched) => {
   let rank = ``;
+
   if (amountWatched >= 1 && amountWatched <= 10) {
     rank = `novice`;
   } else if (amountWatched >= 11 && amountWatched <= 20) {

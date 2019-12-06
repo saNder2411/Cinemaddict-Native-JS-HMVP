@@ -1,5 +1,6 @@
 const createMenuTemplate = (filterValues) => {
   const { watchList, watched, favorite } = filterValues;
+
   return (
     `<nav class="main-navigation">
       <a href="#all" class="main-navigation__item">All movies</a>
