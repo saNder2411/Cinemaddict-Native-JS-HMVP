@@ -6,12 +6,11 @@ import { createPopupDetailsTemplate } from './components/popup-details.js';
 import { createShowMoreButtonTemplate } from './components/show-more-button.js';
 import { generateCards } from './mock/card.js';
 import { generateComments } from './mock/comments.js';
+import {
+  AMOUNT_CARDS, EXTRA_AMOUNT_CARDS, AMOUNT_COMMENTS, SHOWING_CARDS_AMOUNT_ON_START,
+  SHOWING_CARDS_AMOUNT_BY_BUTTON, VALUES_FOR_USER_RANK
+} from './const.js';
 
-const AMOUNT_CARDS = 27;
-const EXTRA_AMOUNT_CARDS = 2;
-const AMOUNT_COMMENTS = 10;
-const SHOWING_CARDS_AMOUNT_ON_START = 5;
-const SHOWING_CARDS_AMOUNT_BY_BUTTON = 5;
 const renderMarkup = (container, template, place = `beforeend`) => {
   container.insertAdjacentHTML(place, template);
 };
@@ -69,11 +68,11 @@ renderMarkup(siteMain, createMenuTemplate(filterValues), `afterbegin`);
 
 
 const siteHeader = document.querySelector(`.header`);
-renderMarkup(siteHeader, createUserRankTemplate(filterValues.watched));
+renderMarkup(siteHeader, createUserRankTemplate(filterValues.watched, ...VALUES_FOR_USER_RANK));
 
 
 const siteFooter = document.querySelector(`.footer`);
 const footerStat = siteFooter.querySelector(`.footer__statistics p`);
 const comments = generateComments(AMOUNT_COMMENTS);
 footerStat.textContent = `${cards.length} movies inside`;
-renderMarkup(siteFooter, createPopupDetailsTemplate(cards[0], comments), `afterend`);
+// renderMarkup(siteFooter, createPopupDetailsTemplate(cards[0], comments), `afterend`);

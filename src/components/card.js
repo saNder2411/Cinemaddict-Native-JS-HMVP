@@ -2,9 +2,10 @@ import { getRandomBoolean, checksBoolean } from '../utils.js';
 
 const MAX_LENGTH_DESCRIPTION = 140;
 const CLASS_ACTIVE = `film-card__controls-item--active`;
+const MAX_AMOUNT_OFFERS = 3;
 
-const getThumbnailDescription = (descriptions, maxLength) => {
-  const description = descriptions.filter(getRandomBoolean).slice(0, 3).join(` `);
+const getThumbnailDescription = (descriptions, maxLength, amountOffers) => {
+  const description = descriptions.filter(getRandomBoolean).slice(0, amountOffers).join(` `);
 
   return (description.length > maxLength) ? `${description.slice(0, maxLength - 1)}…` : description;
 };
@@ -22,7 +23,7 @@ const createCardTemplate = (card) => {
         <span class="film-card__genre">${genres[0]}</span>
       </p>
       <img src="./images/posters/${poster}" alt="" class="film-card__poster">
-      <p class="film-card__description">${getThumbnailDescription(descriptions, MAX_LENGTH_DESCRIPTION)}</p>
+      <p class="film-card__description">${getThumbnailDescription(descriptions, MAX_LENGTH_DESCRIPTION, MAX_AMOUNT_OFFERS)}</p>
       <a class="film-card__comments">${amountComments} comments</a>
       <form class="film-card__controls">
         <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${checksBoolean(watchList, CLASS_ACTIVE)}">Add to watchlist</button>
