@@ -1,4 +1,4 @@
-import { getRandomNumberFromPeriod, getRandomDate } from '../utils.js';
+import Utils from "../utils";
 
 const AUTHOR_NAMES = [`Jonas Hilton`, `Cassandra Saunders`, `Tessa Johnson`, `Ellie-Rose Bostock`, `Cassian Croft`,
   `April Hays`, `Angharad Lowe`, `Ella-Rose Bean`, `Imani Shelton`, `Kaitlyn Vance`];
@@ -33,10 +33,10 @@ const formateDate = (date) => {
 const generateComment = () => {
   const shift = 7000;
   return {
-    urlEmoji: URL_EMOJI[getRandomNumberFromPeriod(URL_EMOJI.length)],
-    text: AUTHOR_MESSAGES[getRandomNumberFromPeriod(AUTHOR_MESSAGES.length)],
-    author: AUTHOR_NAMES[getRandomNumberFromPeriod(AUTHOR_NAMES.length)],
-    day: formateDate(getRandomDate(shift)),
+    urlEmoji: URL_EMOJI[Utils.getRandomNumberFromPeriod(URL_EMOJI.length)],
+    text: AUTHOR_MESSAGES[Utils.getRandomNumberFromPeriod(AUTHOR_MESSAGES.length)],
+    author: AUTHOR_NAMES[Utils.getRandomNumberFromPeriod(AUTHOR_NAMES.length)],
+    day: formateDate(Utils.getRandomDate(shift)),
   };
 };
 

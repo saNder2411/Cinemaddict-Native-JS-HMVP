@@ -1,22 +1,8 @@
-const createMenuTemplate = (filterValues) => {
-  const { watchList, watched, favorite } = filterValues;
+import Utils from '../utils.js';
 
+const createStatisticTemplate = () => {
   return (
-    `<nav class="main-navigation">
-      <a href="#all" class="main-navigation__item">All movies</a>
-      <a href="#watchlist" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">${watchList}</span></a>
-      <a href="#history" class="main-navigation__item">History <span class="main-navigation__item-count">${watched}</span></a>
-      <a href="#favorites" class="main-navigation__item">Favorites <span class="main-navigation__item-count">${favorite}</span></a>
-      <a href="#stats" class="main-navigation__item main-navigation__item--additional main-navigation__item--active">Stats</a>
-    </nav>
-
-    <ul class="sort">
-      <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
-      <li><a href="#" class="sort__button">Sort by date</a></li>
-      <li><a href="#" class="sort__button">Sort by rating</a></li>
-    </ul>
-
-    <section class="statistic">
+    `<section class="statistic">
       <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
         <p class="statistic__filters-description">Show stats:</p>
 
@@ -59,4 +45,24 @@ const createMenuTemplate = (filterValues) => {
   );
 };
 
-export { createMenuTemplate };
+export default class Statistic {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createStatisticTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = Utils.createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

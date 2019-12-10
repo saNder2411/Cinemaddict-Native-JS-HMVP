@@ -1,3 +1,5 @@
+import Utils from "../utils";
+
 const createCardsContainerTemplate = () => {
   const topRatedClass = `films-list__container--top-rated`;
   const mostCommentedClass = `films-list__container--most-commented`;
@@ -28,4 +30,24 @@ const createCardsContainerTemplate = () => {
   );
 };
 
-export { createCardsContainerTemplate };
+export default class CardsContainer {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createCardsContainerTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = Utils.createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

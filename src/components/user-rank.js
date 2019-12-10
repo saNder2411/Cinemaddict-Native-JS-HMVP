@@ -1,3 +1,5 @@
+import Utils from "../utils";
+
 const createUserRankTemplate = (amountWatched, minValRank, middleJrValRank, middleValRank, maxValRank) => {
   let rank = ``;
 
@@ -18,4 +20,27 @@ const createUserRankTemplate = (amountWatched, minValRank, middleJrValRank, midd
   );
 };
 
-export { createUserRankTemplate };
+export default class UserRank {
+  constructor(amountWatched, rankValues) {
+    this._element = null;
+    this._amountWatched = amountWatched;
+    this._rankValues = rankValues;
+  }
+
+  getTemplate() {
+    return createUserRankTemplate(this._amountWatched, ...this._rankValues);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = Utils.createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+
+}

@@ -1,11 +1,11 @@
-import { getRandomBoolean, checksBoolean } from '../utils.js';
+import Utils from "../utils";
 
 const MAX_LENGTH_DESCRIPTION = 140;
 const CLASS_ACTIVE = `film-card__controls-item--active`;
 const MAX_AMOUNT_OFFERS = 3;
 
 const getThumbnailDescription = (descriptions, maxLength, amountOffers) => {
-  const description = descriptions.filter(getRandomBoolean).slice(0, amountOffers).join(` `);
+  const description = descriptions.filter(Utils.getRandomBoolean).slice(0, amountOffers).join(` `);
 
   return (description.length > maxLength) ? `${description.slice(0, maxLength - 1)}…` : description;
 };
@@ -26,13 +26,34 @@ const createCardTemplate = (card) => {
       <p class="film-card__description">${getThumbnailDescription(descriptions, MAX_LENGTH_DESCRIPTION, MAX_AMOUNT_OFFERS)}</p>
       <a class="film-card__comments">${amountComments} comments</a>
       <form class="film-card__controls">
-        <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${checksBoolean(watchList, CLASS_ACTIVE)}">Add to watchlist</button>
-        <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${checksBoolean(watched, CLASS_ACTIVE)}">Mark as watched</button>
-        <button class="film-card__controls-item button film-card__controls-item--favorite ${checksBoolean(favorite, CLASS_ACTIVE)}">Mark as favorite</button>
+        <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${Utils.checksBoolean(watchList, CLASS_ACTIVE)}">Add to watchlist</button>
+        <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${Utils.checksBoolean(watched, CLASS_ACTIVE)}">Mark as watched</button>
+        <button class="film-card__controls-item button film-card__controls-item--favorite ${Utils.checksBoolean(favorite, CLASS_ACTIVE)}">Mark as favorite</button>
       </form>
     </article>`
   );
 };
 
 
-export { createCardTemplate };
+export default class Card {
+  constructor(card) {
+    this._element = null;
+    this._card = card;
+  }
+
+  getTemplate() {
+    return createCardTemplate(this._card);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = Utils.createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
