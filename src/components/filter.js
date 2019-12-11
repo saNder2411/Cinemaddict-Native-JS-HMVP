@@ -14,7 +14,7 @@ const createFiltersTemplate = (filterValues) => {
   );
 };
 
-export default class Filters {
+export default class Filter {
   constructor(filterValues) {
     this._element = null;
     this._filterValues = filterValues;
