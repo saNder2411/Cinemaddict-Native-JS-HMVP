@@ -1,5 +1,5 @@
+import Utils from "../utils";
 import { MAX_RATING } from '../const.js';
-import { checksBoolean } from '../utils.js';
 
 const MONTHS = [
   `January`, `February`, `March`, `April`, `May`, `June`, `July`,
@@ -23,7 +23,7 @@ const createUserRatingMarkup = (maxRating) => {
     .map((markup, i) => {
       markup = (
         `<input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${i + 1}"
-          id="rating-${i + 1}" ${checksBoolean((i === maxRating - 1), `checked`)}>
+          id="rating-${i + 1}" ${Utils.checksBoolean((i === maxRating - 1), `checked`)}>
         <label class="film-details__user-rating-label" for="rating-${i + 1}">${i + 1}</label>`
       );
       return markup;
@@ -121,13 +121,13 @@ const createPopupDetailsTemplate = (card, comments) => {
           </div>
 
           <section class="film-details__controls">
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${checksBoolean(card.watchList, `checked`)}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${Utils.checksBoolean(card.watchList, `checked`)}>
             <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist" >Add to watchlist</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${checksBoolean(card.watched, `checked`)}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${Utils.checksBoolean(card.watched, `checked`)}>
             <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite"${checksBoolean(card.favorite, `checked`)}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite"${Utils.checksBoolean(card.favorite, `checked`)}>
             <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
           </section>
         </div>
@@ -200,4 +200,26 @@ const createPopupDetailsTemplate = (card, comments) => {
   );
 };
 
-export { createPopupDetailsTemplate };
+export default class PopupDetails {
+  constructor(card, comments) {
+    this._element = null;
+    this._card = card;
+    this._comments = comments;
+  }
+
+  getTemplate() {
+    return createPopupDetailsTemplate(this._card, this._comments);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = Utils.createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

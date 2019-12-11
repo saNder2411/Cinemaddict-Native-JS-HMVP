@@ -1,5 +1,5 @@
 import { MAX_RATING } from '../const.js';
-import { getRandomNumberFromPeriod, getRandomBoolean, getRandomDate } from '../utils.js';
+import Utils from '../utils.js';
 
 const TITLES = [
   `The Lord of the Rings`, `Terminator 2: Judgment Day`, `The Shawshank Redemption`, `Forrest Gump`,
@@ -40,11 +40,13 @@ const ACTORS = [
 const COUNTRY = [`USA`, `Italy`, `France`, `Germany`, `British`];
 const AGE_LIMIT_MAX = 18;
 
-const getRandomRating = (maxRating, minRating = 5) => `${getRandomNumberFromPeriod(maxRating, minRating)}.${getRandomNumberFromPeriod(maxRating)}`;
+const getRandomRating = (maxRating, minRating = 5) => (
+  `${Utils.getRandomNumberFromPeriod(maxRating, minRating)}.${Utils.getRandomNumberFromPeriod(maxRating)}`
+);
 
 const getRandomRuntime = () => {
-  const minutes = getRandomNumberFromPeriod(60);
-  const hours = getRandomNumberFromPeriod(3);
+  const minutes = Utils.getRandomNumberFromPeriod(60);
+  const hours = Utils.getRandomNumberFromPeriod(3);
 
   if (hours) {
     return `${hours}h ${(minutes < 10) ? `0${minutes}` : minutes}m`;
@@ -55,23 +57,23 @@ const getRandomRuntime = () => {
 
 const generateCard = () => {
   return {
-    poster: URL_POSTERS[getRandomNumberFromPeriod(URL_POSTERS.length)],
-    ageLimit: `${getRandomNumberFromPeriod(AGE_LIMIT_MAX + 1, 7)}`,
-    title: TITLES[getRandomNumberFromPeriod(TITLES.length)],
+    poster: URL_POSTERS[Utils.getRandomNumberFromPeriod(URL_POSTERS.length)],
+    ageLimit: `${Utils.getRandomNumberFromPeriod(AGE_LIMIT_MAX + 1, 7)}`,
+    title: TITLES[Utils.getRandomNumberFromPeriod(TITLES.length)],
     rating: getRandomRating(MAX_RATING + 1),
-    yourRate: getRandomNumberFromPeriod(MAX_RATING + 1),
-    director: DIRECTORS[getRandomNumberFromPeriod(DIRECTORS.length)],
-    writers: WRITERS.filter(getRandomBoolean).slice(0, getRandomNumberFromPeriod(4, 1)).join(`, `),
-    actors: ACTORS.filter(getRandomBoolean).slice(0, getRandomNumberFromPeriod(4, 1)).join(`, `),
-    releaseDate: getRandomDate(),
+    yourRate: Utils.getRandomNumberFromPeriod(MAX_RATING + 1),
+    director: DIRECTORS[Utils.getRandomNumberFromPeriod(DIRECTORS.length)],
+    writers: WRITERS.filter(Utils.getRandomBoolean).slice(0, Utils.getRandomNumberFromPeriod(4, 1)).join(`, `),
+    actors: ACTORS.filter(Utils.getRandomBoolean).slice(0, Utils.getRandomNumberFromPeriod(4, 1)).join(`, `),
+    releaseDate: Utils.getRandomDate(),
     runtime: getRandomRuntime(),
-    country: COUNTRY[getRandomNumberFromPeriod(COUNTRY.length)],
-    genres: GENRES.filter(getRandomBoolean).slice(2, 6),
+    country: COUNTRY[Utils.getRandomNumberFromPeriod(COUNTRY.length)],
+    genres: GENRES.filter(Utils.getRandomBoolean).slice(2, 6),
     descriptions: DESCRIPTIONS,
-    amountComments: getRandomNumberFromPeriod(500),
-    watchList: getRandomBoolean(),
-    watched: getRandomBoolean(),
-    favorite: getRandomBoolean(),
+    amountComments: Utils.getRandomNumberFromPeriod(500),
+    watchList: Utils.getRandomBoolean(),
+    watched: Utils.getRandomBoolean(),
+    favorite: Utils.getRandomBoolean(),
   };
 };
 
