@@ -1,4 +1,4 @@
-import Utils from '../utils.js';
+import AbstractComponent from './abstract-component.js';
 
 const createFiltersTemplate = (filterValues) => {
   const { watchList, watched, favorite } = filterValues;
@@ -14,25 +14,13 @@ const createFiltersTemplate = (filterValues) => {
   );
 };
 
-export default class Filter {
+export default class Filter extends AbstractComponent {
   constructor(filterValues) {
-    this._element = null;
+    super();
     this._filterValues = filterValues;
   }
 
   getTemplate() {
     return createFiltersTemplate(this._filterValues);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = Utils.createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

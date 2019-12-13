@@ -35,19 +35,23 @@ export default class Utils {
     };
   }
 
-  static renderMarkup(container, element, place = this.renderPosition().BEFOREEND) {
+  static renderMarkup(container, component, place = this.renderPosition().BEFOREEND) {
     switch (place) {
       case this.renderPosition().AFTERBEGIN:
-        container.prepend(element);
+        container.prepend(component.getElement());
         break;
       case this.renderPosition().AFTEREND:
-        container.after(element);
+        container.after(component.getElement());
         break;
       case this.renderPosition().BEFOREEND:
-        container.append(element);
+        container.append(component.getElement());
         break;
     }
   }
 
+  static remove(component) {
+    component.getElement().remove();
+    component.removeElement();
+  }
 }
 

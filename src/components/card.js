@@ -1,4 +1,5 @@
-import Utils from "../utils";
+import AbstractComponent from './abstract-component.js';
+import Utils from '../utils.js';
 
 const MAX_LENGTH_DESCRIPTION = 140;
 const CLASS_ACTIVE = `film-card__controls-item--active`;
@@ -35,25 +36,13 @@ const createCardTemplate = (card) => {
 };
 
 
-export default class Card {
+export default class Card extends AbstractComponent {
   constructor(card) {
-    this._element = null;
+    super();
     this._card = card;
   }
 
   getTemplate() {
     return createCardTemplate(this._card);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = Utils.createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

@@ -1,4 +1,4 @@
-import Utils from "../utils";
+import AbstractComponent from './abstract-component.js';
 
 const createUserRankTemplate = (amountWatched, minValRank, middleJrValRank, middleValRank, maxValRank) => {
   let rank = ``;
@@ -20,9 +20,9 @@ const createUserRankTemplate = (amountWatched, minValRank, middleJrValRank, midd
   );
 };
 
-export default class UserRank {
+export default class UserRank extends AbstractComponent {
   constructor(amountWatched, rankValues) {
-    this._element = null;
+    super();
     this._amountWatched = amountWatched;
     this._rankValues = rankValues;
   }
@@ -30,17 +30,4 @@ export default class UserRank {
   getTemplate() {
     return createUserRankTemplate(this._amountWatched, ...this._rankValues);
   }
-
-  getElement() {
-    if (!this._element) {
-      this._element = Utils.createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
-  }
-
 }

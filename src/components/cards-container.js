@@ -1,4 +1,4 @@
-import Utils from "../utils";
+import AbstractComponent from './abstract-component.js';
 
 const createCardsContainerTemplate = () => {
   const topRatedClass = `films-list__container--top-rated`;
@@ -30,24 +30,8 @@ const createCardsContainerTemplate = () => {
   );
 };
 
-export default class CardsContainer {
-  constructor() {
-    this._element = null;
-  }
-
+export default class CardsContainer extends AbstractComponent {
   getTemplate() {
     return createCardsContainerTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = Utils.createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
