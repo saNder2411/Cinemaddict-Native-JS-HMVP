@@ -24,14 +24,15 @@ export default class Utils {
     const newElement = document.createElement(`div`);
     newElement.innerHTML = template;
 
-    return newElement.firstChild;
+    return newElement.firstElementChild;
   }
 
   static renderPosition() {
     return {
       AFTERBEGIN: `afterbrgin`,
       AFTEREND: `afterend`,
-      BEFOREEND: `beforeend`
+      BEFOREEND: `beforeend`,
+      BEFOREBEGIN: `beforebegin`
     };
   }
 
@@ -46,12 +47,26 @@ export default class Utils {
       case this.renderPosition().BEFOREEND:
         container.append(component.getElement());
         break;
+      case this.renderPosition().BEFOREBEGIN:
+        container.before(component.getElement());
+        break;
     }
   }
 
   static remove(component) {
     component.getElement().remove();
     component.removeElement();
+  }
+
+  static calcFilterValues(arrCards, ...prop) {
+    const [watchList, watched, favorite] = prop;
+    return arrCards.reduce((sum, card) => {
+      sum[watchList] = (card[watchList]) ? ++sum[watchList] : sum[watchList];
+      sum[watched] = (card[watched]) ? ++sum[watched] : sum[watched];
+      sum[favorite] = (card[favorite]) ? ++sum[favorite] : sum[favorite];
+
+      return sum;
+    }, { [watchList]: 0, [watched]: 0, [favorite]: 0 });
   }
 }
 

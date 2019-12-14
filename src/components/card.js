@@ -45,4 +45,9 @@ export default class Card extends AbstractComponent {
   getTemplate() {
     return createCardTemplate(this._card);
   }
+
+  setElementClickHandler(handler, classNameElement) {
+    this.getElement().querySelector(classNameElement)
+      .addEventListener(`click`, handler);
+  }
 }
