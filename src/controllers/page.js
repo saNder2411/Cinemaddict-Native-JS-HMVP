@@ -26,8 +26,8 @@ const renderCard = (container, card) => {
   };
 
   const showPopupDetailsOnClick = (evt) => {
-    const targetClassName = evt.target.className;
-    if (targetClassName === `film-card__poster` || targetClassName === `film-card__title` || targetClassName === `film-card__comments`) {
+    evt.preventDefault();
+    if (evt.target.className === `film-card__poster` || evt.target.className === `film-card__title` || evt.target.className === `film-card__comments`) {
       Utils.renderMarkup(document.body.lastElementChild, popupDetailsComponent, Utils.renderPosition().BEFOREBEGIN);
       document.addEventListener(`keydown`, onEscKeyDown);
     }
