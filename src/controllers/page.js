@@ -25,9 +25,12 @@ const renderCard = (container, card) => {
     }
   };
 
-  const showPopupDetailsOnClick = () => {
-    Utils.renderMarkup(document.body.lastElementChild, popupDetailsComponent, Utils.renderPosition().BEFOREBEGIN);
-    document.addEventListener(`keydown`, onEscKeyDown);
+  const showPopupDetailsOnClick = (evt) => {
+    const targetClassName = evt.target.className;
+    if (targetClassName === `film-card__poster` || targetClassName === `film-card__title` || targetClassName === `film-card__comments`) {
+      Utils.renderMarkup(document.body.lastElementChild, popupDetailsComponent, Utils.renderPosition().BEFOREBEGIN);
+      document.addEventListener(`keydown`, onEscKeyDown);
+    }
   };
 
   const hidePopupDetailsOnClick = () => {
@@ -36,9 +39,7 @@ const renderCard = (container, card) => {
   };
 
 
-  cardComponent.setElementClickHandler(showPopupDetailsOnClick, `.film-card__poster`);
-  cardComponent.setElementClickHandler(showPopupDetailsOnClick, `.film-card__title`);
-  cardComponent.setElementClickHandler(showPopupDetailsOnClick, `.film-card__comments`);
+  cardComponent.setElementClickHandler(showPopupDetailsOnClick);
 
   popupDetailsComponent.setHidePopupClickHandler(hidePopupDetailsOnClick);
 
