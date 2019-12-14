@@ -24,30 +24,49 @@ export default class Utils {
     const newElement = document.createElement(`div`);
     newElement.innerHTML = template;
 
-    return newElement.firstChild;
+    return newElement.firstElementChild;
   }
 
   static renderPosition() {
     return {
       AFTERBEGIN: `afterbrgin`,
       AFTEREND: `afterend`,
-      BEFOREEND: `beforeend`
+      BEFOREEND: `beforeend`,
+      BEFOREBEGIN: `beforebegin`
     };
   }
 
-  static renderMarkup(container, element, place = this.renderPosition().BEFOREEND) {
+  static renderMarkup(container, component, place = this.renderPosition().BEFOREEND) {
     switch (place) {
       case this.renderPosition().AFTERBEGIN:
-        container.prepend(element);
+        container.prepend(component.getElement());
         break;
       case this.renderPosition().AFTEREND:
-        container.after(element);
+        container.after(component.getElement());
         break;
       case this.renderPosition().BEFOREEND:
-        container.append(element);
+        container.append(component.getElement());
+        break;
+      case this.renderPosition().BEFOREBEGIN:
+        container.before(component.getElement());
         break;
     }
   }
 
+  static remove(component) {
+    component.getElement().remove();
+    component.removeElement();
+  }
+
+  static calcFilterValues(arrCards, ...prop) {
+    const [watchList, watched, favorite] = prop;
+    return arrCards.reduce((sum, card) => {
+      sum[watchList] = (card[watchList]) ? ++sum[watchList] : sum[watchList];
+      sum[watched] = (card[watched]) ? ++sum[watched] : sum[watched];
+      sum[favorite] = (card[favorite]) ? ++sum[favorite] : sum[favorite];
+
+      return sum;
+    }, { [watchList]: 0, [watched]: 0, [favorite]: 0 });
+  }
 }
 

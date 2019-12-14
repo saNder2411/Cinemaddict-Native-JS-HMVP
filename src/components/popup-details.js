@@ -1,3 +1,4 @@
+import AbstractComponent from './abstract-component.js';
 import Utils from "../utils";
 import { MAX_RATING } from '../const.js';
 
@@ -200,9 +201,9 @@ const createPopupDetailsTemplate = (card, comments) => {
   );
 };
 
-export default class PopupDetails {
+export default class PopupDetails extends AbstractComponent {
   constructor(card, comments) {
-    this._element = null;
+    super();
     this._card = card;
     this._comments = comments;
   }
@@ -211,15 +212,8 @@ export default class PopupDetails {
     return createPopupDetailsTemplate(this._card, this._comments);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = Utils.createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setHidePopupClickHandler(handler) {
+    this.getElement().querySelector(`.film-details__close-btn`)
+      .addEventListener(`click`, handler);
   }
 }
