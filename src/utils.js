@@ -68,5 +68,13 @@ export default class Utils {
       return sum;
     }, { [watchList]: 0, [watched]: 0, [favorite]: 0 });
   }
+
+  static sortType() {
+    return {
+      DEFAULT: `default`,
+      DATE: `date`,
+      RATING: `rating`,
+    };
+  }
 }
 
