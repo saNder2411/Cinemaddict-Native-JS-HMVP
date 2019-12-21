@@ -39,6 +39,8 @@ const ACTORS = [
 ];
 const COUNTRY = [`USA`, `Italy`, `France`, `Germany`, `British`];
 const AGE_LIMIT_MAX = 18;
+const MAX_AMOUNT_OFFERS = 3;
+const MAX_LENGTH_DESCRIPTION = 140;
 
 const getRandomRating = (maxRating, minRating = 5) => (
   `${Utils.getRandomNumberFromPeriod(maxRating, minRating)}.${Utils.getRandomNumberFromPeriod(maxRating)}`
@@ -53,6 +55,12 @@ const getRandomRuntime = () => {
   }
 
   return `${(minutes < 10) ? `0${minutes}` : minutes}m`;
+};
+
+const getThumbnailDescriptions = (descriptions, maxLength, amountOffers) => {
+  const description = descriptions.filter(Utils.getRandomBoolean).slice(0, amountOffers).join(` `);
+
+  return (description.length > maxLength) ? `${description.slice(0, maxLength - 1)}…` : description;
 };
 
 const generateCard = () => {
@@ -70,10 +78,11 @@ const generateCard = () => {
     country: COUNTRY[Utils.getRandomNumberFromPeriod(COUNTRY.length)],
     genres: GENRES.filter(Utils.getRandomBoolean).slice(2, 6),
     descriptions: DESCRIPTIONS,
+    thumbnailDescription: getThumbnailDescriptions(DESCRIPTIONS, MAX_LENGTH_DESCRIPTION, MAX_AMOUNT_OFFERS),
     amountComments: Utils.getRandomNumberFromPeriod(500),
-    watchList: Utils.getRandomBoolean(),
-    watched: Utils.getRandomBoolean(),
-    favorite: Utils.getRandomBoolean(),
+    isWatchlist: Utils.getRandomBoolean(),
+    isWatched: Utils.getRandomBoolean(),
+    isFavorite: Utils.getRandomBoolean(),
   };
 };
 
