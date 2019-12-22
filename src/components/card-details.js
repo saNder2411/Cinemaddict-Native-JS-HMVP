@@ -1,4 +1,4 @@
-import AbstractComponent from './abstract-component.js';
+import AbstractSmartComponent from './abstract-smart-component.js';
 import Utils from "../utils";
 import { MAX_RATING } from '../const.js';
 
@@ -32,8 +32,42 @@ const createUserRatingMarkup = (maxRating) => {
     .join(`\n`);
 };
 
-const createPopupDetailsTemplate = (card, comments) => {
+const createUserRatingContainerMarkup = (poster, title) => {
+  return (
+    `<div class="form-details__middle-container">
+      <section class="film-details__user-rating-wrap">
+        <div class="film-details__user-rating-controls">
+          <button class="film-details__watched-reset" type="button">Undo</button>
+        </div>
+
+        <div class="film-details__user-score">
+          <div class="film-details__user-rating-poster">
+            <img src="./images/posters/${poster}" alt="film-poster" class="film-details__user-rating-img">
+          </div>
+
+          <section class="film-details__user-rating-inner">
+            <h3 class="film-details__user-rating-title">${title}</h3>
+
+            <p class="film-details__user-rating-feelings">How you feel it?</p>
+
+            <div class="film-details__user-rating-score">
+              ${createUserRatingMarkup(MAX_RATING)}
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>`
+  );
+};
+
+const createImageEmojiMarkup = (emojiSrc) => {
+  return emojiSrc ? (`<img src="${emojiSrc}" width="55" height="55" alt="emoji">`) : ``;
+};
+
+
+const createCardDetailsTemplate = (card, comments, option = {}) => {
   const { releaseDate } = card;
+  const { isWatchlist, isWatched, isFavorite, emojiSrc } = option;
   const date = `${releaseDate.getDate()} ${MONTHS[releaseDate.getMonth()]} ${releaseDate.getFullYear()}`;
 
   const createCommentsMarkup = (arrComments) => {
@@ -55,7 +89,6 @@ const createPopupDetailsTemplate = (card, comments) => {
       );
     })
       .join(`\n`);
-
   };
 
   return (
@@ -81,7 +114,7 @@ const createPopupDetailsTemplate = (card, comments) => {
 
                 <div class="film-details__rating">
                   <p class="film-details__total-rating">${card.rating}</p>
-                  <p class="film-details__user-rating">Your rate ${card.yourRate}</p>
+                  <p class="film-details__user-rating">Your rate ${Utils.checksBoolean(isWatched, card.yourRate)}</p>
                 </div>
               </div>
 
@@ -122,41 +155,17 @@ const createPopupDetailsTemplate = (card, comments) => {
           </div>
 
           <section class="film-details__controls">
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${Utils.checksBoolean(card.watchList, `checked`)}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${Utils.checksBoolean(isWatchlist, `checked`)}>
             <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist" >Add to watchlist</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${Utils.checksBoolean(card.watched, `checked`)}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${Utils.checksBoolean(isWatched, `checked`)}>
             <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite"${Utils.checksBoolean(card.favorite, `checked`)}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite"${Utils.checksBoolean(isFavorite, `checked`)}>
             <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
           </section>
         </div>
-
-        <div class="form-details__middle-container">
-          <section class="film-details__user-rating-wrap">
-            <div class="film-details__user-rating-controls">
-              <button class="film-details__watched-reset" type="button">Undo</button>
-            </div>
-
-            <div class="film-details__user-score">
-              <div class="film-details__user-rating-poster">
-                <img src="./images/posters/${card.poster}" alt="film-poster" class="film-details__user-rating-img">
-              </div>
-
-              <section class="film-details__user-rating-inner">
-                <h3 class="film-details__user-rating-title">${card.title}</h3>
-
-                <p class="film-details__user-rating-feelings">How you feel it?</p>
-
-                <div class="film-details__user-rating-score">
-                  ${createUserRatingMarkup(MAX_RATING)}
-                </div>
-              </section>
-            </div>
-          </section>
-        </div>
-
+        ${Utils.checksBoolean(isWatched, createUserRatingContainerMarkup(card.poster, card.title))}
         <div class="form-details__bottom-container">
           <section class="film-details__comments-wrap">
             <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
@@ -166,7 +175,7 @@ const createPopupDetailsTemplate = (card, comments) => {
             </ul>
 
             <div class="film-details__new-comment">
-              <div for="add-emoji" class="film-details__add-emoji-label"></div>
+              <div for="add-emoji" class="film-details__add-emoji-label">${createImageEmojiMarkup(emojiSrc)}</div>
 
               <label class="film-details__comment-label">
                 <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
@@ -201,19 +210,82 @@ const createPopupDetailsTemplate = (card, comments) => {
   );
 };
 
-export default class PopupDetails extends AbstractComponent {
+export default class CardDetails extends AbstractSmartComponent {
   constructor(card, comments) {
     super();
     this._card = card;
     this._comments = comments;
+    this._isWatchlist = this._card.isWatchlist;
+    this._isWatched = this._card.isWatched;
+    this._isFavorite = this._card.isFavorite;
+    this._hideCardDetailsHandler = null;
+    this._emojiSrc = ``;
+
+    this._subscribeOnEvents();
   }
 
   getTemplate() {
-    return createPopupDetailsTemplate(this._card, this._comments);
+    return createCardDetailsTemplate(this._card, this._comments, {
+      isWatchlist: this._isWatchlist,
+      isWatched: this._isWatched,
+      isFavorite: this._isFavorite,
+      emojiSrc: this._emojiSrc,
+    });
   }
 
-  setHidePopupClickHandler(handler) {
+  setHideCardDetailsClickHandler(handler) {
     this.getElement().querySelector(`.film-details__close-btn`)
       .addEventListener(`click`, handler);
+
+    this._hideCardDetailsHandler = handler;
+  }
+
+  _subscribeOnEvents() {
+    const element = this.getElement();
+
+    element.querySelector(`#watchlist`)
+      .addEventListener(`click`, () => {
+        this._isWatchlist = !this._isWatchlist;
+
+        this.reRender();
+      });
+
+    element.querySelector(`#watched`)
+      .addEventListener(`click`, () => {
+        this._isWatched = !this._isWatched;
+
+        this.reRender();
+      });
+
+    element.querySelector(`#favorite`)
+      .addEventListener(`click`, () => {
+        this._isFavorite = !this._isFavorite;
+
+        this.reRender();
+      });
+
+    element.querySelector(`.film-details__emoji-list`)
+      .addEventListener(`click`, (evt) => {
+        if (evt.target.tagName === `IMG`) {
+          this._emojiSrc = evt.target.src;
+
+          this.reRender();
+        }
+
+      });
+  }
+
+  recoveryListeners() {
+    this._subscribeOnEvents();
+    this.setHideCardDetailsClickHandler(this._hideCardDetailsHandler);
+  }
+
+  reset() {
+    this._isWatchlist = this._card.isWatchlist;
+    this._isWatched = this._card.isWatched;
+    this._isFavorite = this._card.isFavorite;
+    this._emojiSrc = ``;
+
+    this.reRender();
   }
 }

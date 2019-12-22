@@ -59,14 +59,14 @@ export default class Utils {
   }
 
   static calcFilterValues(arrCards, ...prop) {
-    const [watchList, watched, favorite] = prop;
+    const [isWatchlist, isWatched, isFavorite] = prop;
     return arrCards.reduce((sum, card) => {
-      sum[watchList] = (card[watchList]) ? ++sum[watchList] : sum[watchList];
-      sum[watched] = (card[watched]) ? ++sum[watched] : sum[watched];
-      sum[favorite] = (card[favorite]) ? ++sum[favorite] : sum[favorite];
+      sum[isWatchlist] = (card[isWatchlist]) ? ++sum[isWatchlist] : sum[isWatchlist];
+      sum[isWatched] = (card[isWatched]) ? ++sum[isWatched] : sum[isWatched];
+      sum[isFavorite] = (card[isFavorite]) ? ++sum[isFavorite] : sum[isFavorite];
 
       return sum;
-    }, { [watchList]: 0, [watched]: 0, [favorite]: 0 });
+    }, { [isWatchlist]: 0, [isWatched]: 0, [isFavorite]: 0 });
   }
 
   static sortType() {
@@ -75,6 +75,22 @@ export default class Utils {
       DATE: `date`,
       RATING: `rating`,
     };
+  }
+
+  static modeCard() {
+    return {
+      DEFAULT: `default`,
+      DETAILS: `details`,
+    };
+  }
+
+  static replace(oldComponent, newComponent) {
+    const oldElement = oldComponent.getElement();
+    const newElement = newComponent.getElement();
+
+    if (oldElement && newElement) {
+      oldElement.replaceWith(newElement);
+    }
   }
 }
 

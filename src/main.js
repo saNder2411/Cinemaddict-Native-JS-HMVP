@@ -6,10 +6,10 @@ import { generateCards } from './mock/card.js';
 import { AMOUNT_CARDS, VALUES_FOR_USER_RANK } from './const.js';
 
 const cards = generateCards(AMOUNT_CARDS);
-const filterValues = Utils.calcFilterValues(cards, `watchList`, `watched`, `favorite`);
+const filterValues = Utils.calcFilterValues(cards, `isWatchlist`, `isWatched`, `isFavorite`);
 
 const siteHeader = document.querySelector(`.header`);
-Utils.renderMarkup(siteHeader, new UserRankComponent(filterValues.watched, VALUES_FOR_USER_RANK));
+Utils.renderMarkup(siteHeader, new UserRankComponent(filterValues.isWatched, VALUES_FOR_USER_RANK));
 
 const siteMain = document.querySelector(`.main`);
 Utils.renderMarkup(siteMain, new FilterComponent(filterValues));
