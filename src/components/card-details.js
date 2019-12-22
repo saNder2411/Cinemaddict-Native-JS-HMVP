@@ -1,11 +1,7 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
 import Utils from "../utils";
+import moment from 'moment';
 import { MAX_RATING } from '../const.js';
-
-const MONTHS = [
-  `January`, `February`, `March`, `April`, `May`, `June`, `July`,
-  `August`, `September`, `October`, `November`, `December`
-];
 
 const createGenresMarkup = (genres) => {
   const title = genres.length > 1 ? `Genres` : `Genre`;
@@ -68,7 +64,7 @@ const createImageEmojiMarkup = (emojiSrc) => {
 const createCardDetailsTemplate = (card, comments, option = {}) => {
   const { releaseDate } = card;
   const { isWatchlist, isWatched, isFavorite, emojiSrc } = option;
-  const date = `${releaseDate.getDate()} ${MONTHS[releaseDate.getMonth()]} ${releaseDate.getFullYear()}`;
+  const date = `${moment(releaseDate).format(`DD MMMM YYYY`)}`;
 
   const createCommentsMarkup = (arrComments) => {
     return arrComments.map((comment) => {
