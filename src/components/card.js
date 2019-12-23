@@ -1,5 +1,6 @@
 import AbstractComponent from './abstract-component.js';
 import Utils from '../utils.js';
+import moment from 'moment';
 
 const CLASS_ACTIVE = `film-card__controls-item--active`;
 
@@ -12,7 +13,7 @@ const createCardTemplate = (card) => {
       <h3 class="film-card__title">${title}</h3>
       <p class="film-card__rating">${rating}</p>
       <p class="film-card__info">
-        <span class="film-card__year">${releaseDate.getFullYear()}</span>
+        <span class="film-card__year">${moment(releaseDate).format(`YYYY`)}</span>
         <span class="film-card__duration">${runtime}</span>
         <span class="film-card__genre">${genres[0]}</span>
       </p>
