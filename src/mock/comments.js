@@ -1,4 +1,4 @@
-import Utils from "../utils";
+import Common from '../utils/common.js';
 import moment from 'moment';
 
 const AUTHOR_NAMES = [`Jonas Hilton`, `Cassandra Saunders`, `Tessa Johnson`, `Ellie-Rose Bostock`, `Cassian Croft`,
@@ -10,10 +10,10 @@ const URL_EMOJI = [`angry.png`, `puke.png`, `sleeping.png`, `smile.png`, `trophy
 const generateComment = () => {
   const shift = 60;
   return {
-    urlEmoji: URL_EMOJI[Utils.getRandomNumberFromPeriod(URL_EMOJI.length)],
-    text: AUTHOR_MESSAGES[Utils.getRandomNumberFromPeriod(AUTHOR_MESSAGES.length)],
-    author: AUTHOR_NAMES[Utils.getRandomNumberFromPeriod(AUTHOR_NAMES.length)],
-    day: moment(Utils.getRandomDate(shift)).fromNow(),
+    urlEmoji: URL_EMOJI[Common.getRandomNumberFromPeriod(URL_EMOJI.length)],
+    text: AUTHOR_MESSAGES[Common.getRandomNumberFromPeriod(AUTHOR_MESSAGES.length)],
+    author: AUTHOR_NAMES[Common.getRandomNumberFromPeriod(AUTHOR_NAMES.length)],
+    day: moment(Common.getRandomDate(shift)).fromNow(),
   };
 };
 

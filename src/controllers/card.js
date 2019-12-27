@@ -1,15 +1,17 @@
 import CardComponent from '../components/card.js';
 import CardDetailsComponent from '../components/card-details.js';
-import Utils from '../utils.js';
+import Render from '../utils/render';
 import { generateComments } from '../mock/comments.js';
-import { INTERACTIVE_ELEMENTS_CARD, AMOUNT_COMMENTS } from '../const.js';
+import { INTERACTIVE_ELEMENTS_CARD, AMOUNT_COMMENTS, Mode } from '../const.js';
 
 export default class CardController {
   constructor(container, onDataChange, onViewChange) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
-    this._mode = Utils.modeCard().DEFAULT;
+
+    this._mode = Mode.DEFAULT;
+
     this._comments = generateComments(AMOUNT_COMMENTS);
     this._cardComponent = null;
     this._cardDetailsComponent = null;
@@ -30,29 +32,29 @@ export default class CardController {
 
     this._cardComponent.setWatchlistButtonClickHandler(() => {
       this._onDataChange(this, card, Object.assign({}, card, {
-        isWatchlist: !card.isWatchlist,
+        watchlist: !card.watchlist,
       }));
     });
 
     this._cardComponent.setWatchedButtonClickHandler(() => {
       this._onDataChange(this, card, Object.assign({}, card, {
-        isWatched: !card.isWatched,
+        history: !card.history,
       }));
     });
 
     this._cardComponent.setFavoriteButtonClickHandler(() => {
       this._onDataChange(this, card, Object.assign({}, card, {
-        isFavorite: !card.isFavorite,
+        favorites: !card.favorites,
       }));
     });
 
     this._cardDetailsComponent.setHideCardDetailsClickHandler(this._hideCardDetailsOnClick);
 
     if (oldCardComponent && oldCardDetailsComponent) {
-      Utils.replace(oldCardComponent, this._cardComponent);
-      Utils.replace(oldCardDetailsComponent, this._cardDetailsComponent);
+      Render.replace(oldCardComponent, this._cardComponent);
+      Render.replace(oldCardDetailsComponent, this._cardDetailsComponent);
     } else {
-      Utils.renderMarkup(this._container, this._cardComponent);
+      Render.renderMarkup(this._container, this._cardComponent);
     }
   }
 
@@ -62,7 +64,7 @@ export default class CardController {
     if (isEscKey) {
       this._cardDetailsComponent.reset();
       this._cardDetailsComponent.getElement().remove();
-      this._mode = Utils.modeCard().DEFAULT;
+      this._mode = Mode.DEFAULT;
       document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
   }
@@ -72,8 +74,8 @@ export default class CardController {
 
     if (INTERACTIVE_ELEMENTS_CARD[evt.target.className]) {
       this._onViewChange();
-      this._mode = Utils.modeCard().DETAILS;
-      Utils.renderMarkup(document.body.lastElementChild, this._cardDetailsComponent, Utils.renderPosition().BEFOREBEGIN);
+      this._mode = Mode.DETAILS;
+      Render.renderMarkup(document.body.lastElementChild, this._cardDetailsComponent, Render.renderPosition().BEFOREBEGIN);
       document.addEventListener(`keydown`, this._onEscKeyDown);
     }
   }
@@ -81,12 +83,12 @@ export default class CardController {
   _hideCardDetailsOnClick() {
     this._cardDetailsComponent.reset();
     this._cardDetailsComponent.getElement().remove();
-    this._mode = Utils.modeCard().DEFAULT;
+    this._mode = Mode.DEFAULT;
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   setDefaultView() {
-    if (this._mode !== Utils.modeCard().DEFAULT) {
+    if (this._mode !== Mode.DEFAULT) {
       this._hideCardDetailsOnClick();
     }
   }

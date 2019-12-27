@@ -1,5 +1,5 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
-import Utils from "../utils";
+import Common from '../utils/common.js';
 import moment from 'moment';
 import { MAX_RATING } from '../const.js';
 
@@ -20,7 +20,7 @@ const createUserRatingMarkup = (maxRating) => {
     .map((markup, i) => {
       markup = (
         `<input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${i + 1}"
-          id="rating-${i + 1}" ${Utils.checksBoolean((i === maxRating - 1), `checked`)}>
+          id="rating-${i + 1}" ${Common.checksBoolean((i === maxRating - 1), `checked`)}>
         <label class="film-details__user-rating-label" for="rating-${i + 1}">${i + 1}</label>`
       );
       return markup;
@@ -63,7 +63,7 @@ const createImageEmojiMarkup = (emojiSrc) => {
 
 const createCardDetailsTemplate = (card, comments, option = {}) => {
   const { releaseDate } = card;
-  const { isWatchlist, isWatched, isFavorite, emojiSrc } = option;
+  const { watchlist, history, favorites, emojiSrc } = option;
   const date = `${moment(releaseDate).format(`DD MMMM YYYY`)}`;
 
   const createCommentsMarkup = (arrComments) => {
@@ -88,7 +88,7 @@ const createCardDetailsTemplate = (card, comments, option = {}) => {
   };
 
   return (
-    `<section class="film-details">
+    `<section class="film-details" style="animation: none">
       <form class="film-details__inner" action="" method="get">
         <div class="form-details__top-container">
           <div class="film-details__close">
@@ -110,7 +110,7 @@ const createCardDetailsTemplate = (card, comments, option = {}) => {
 
                 <div class="film-details__rating">
                   <p class="film-details__total-rating">${card.rating}</p>
-                  <p class="film-details__user-rating">Your rate ${Utils.checksBoolean(isWatched, card.yourRate)}</p>
+                  <p class="film-details__user-rating">Your rate ${Common.checksBoolean(history, card.yourRate)}</p>
                 </div>
               </div>
 
@@ -151,17 +151,17 @@ const createCardDetailsTemplate = (card, comments, option = {}) => {
           </div>
 
           <section class="film-details__controls">
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${Utils.checksBoolean(isWatchlist, `checked`)}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${Common.checksBoolean(watchlist, `checked`)}>
             <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist" >Add to watchlist</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${Utils.checksBoolean(isWatched, `checked`)}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${Common.checksBoolean(history, `checked`)}>
             <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite"${Utils.checksBoolean(isFavorite, `checked`)}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite"${Common.checksBoolean(favorites, `checked`)}>
             <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
           </section>
         </div>
-        ${Utils.checksBoolean(isWatched, createUserRatingContainerMarkup(card.poster, card.title))}
+        ${Common.checksBoolean(history, createUserRatingContainerMarkup(card.poster, card.title))}
         <div class="form-details__bottom-container">
           <section class="film-details__comments-wrap">
             <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
@@ -211,9 +211,9 @@ export default class CardDetails extends AbstractSmartComponent {
     super();
     this._card = card;
     this._comments = comments;
-    this._isWatchlist = this._card.isWatchlist;
-    this._isWatched = this._card.isWatched;
-    this._isFavorite = this._card.isFavorite;
+    this._watchlist = this._card.watchlist;
+    this._isWatched = this._card.history;
+    this._isFavorite = this._card.favorites;
     this._hideCardDetailsHandler = null;
     this._emojiSrc = ``;
 
@@ -222,9 +222,9 @@ export default class CardDetails extends AbstractSmartComponent {
 
   getTemplate() {
     return createCardDetailsTemplate(this._card, this._comments, {
-      isWatchlist: this._isWatchlist,
-      isWatched: this._isWatched,
-      isFavorite: this._isFavorite,
+      watchlist: this._watchlist,
+      history: this._isWatched,
+      favorites: this._isFavorite,
       emojiSrc: this._emojiSrc,
     });
   }
@@ -241,7 +241,7 @@ export default class CardDetails extends AbstractSmartComponent {
 
     element.querySelector(`#watchlist`)
       .addEventListener(`click`, () => {
-        this._isWatchlist = !this._isWatchlist;
+        this._watchlist = !this._watchlist;
 
         this.reRender();
       });
@@ -277,9 +277,9 @@ export default class CardDetails extends AbstractSmartComponent {
   }
 
   reset() {
-    this._isWatchlist = this._card.isWatchlist;
-    this._isWatched = this._card.isWatched;
-    this._isFavorite = this._card.isFavorite;
+    this._watchlist = this._card.watchlist;
+    this._isWatched = this._card.history;
+    this._isFavorite = this._card.favorites;
     this._emojiSrc = ``;
 
     this.reRender();

@@ -1,5 +1,5 @@
 import { MAX_RATING } from '../const.js';
-import Utils from '../utils.js';
+import Common from '../utils/common.js';
 
 const TITLES = [
   `The Lord of the Rings`, `Terminator 2: Judgment Day`, `The Shawshank Redemption`, `Forrest Gump`,
@@ -43,12 +43,12 @@ const MAX_AMOUNT_OFFERS = 3;
 const MAX_LENGTH_DESCRIPTION = 140;
 
 const getRandomRating = (maxRating, minRating = 5) => (
-  `${Utils.getRandomNumberFromPeriod(maxRating, minRating)}.${Utils.getRandomNumberFromPeriod(maxRating)}`
+  `${Common.getRandomNumberFromPeriod(maxRating, minRating)}.${Common.getRandomNumberFromPeriod(maxRating)}`
 );
 
 const getRandomRuntime = () => {
-  const minutes = Utils.getRandomNumberFromPeriod(60);
-  const hours = Utils.getRandomNumberFromPeriod(3);
+  const minutes = Common.getRandomNumberFromPeriod(60);
+  const hours = Common.getRandomNumberFromPeriod(3);
 
   if (hours) {
     return `${hours}h ${(minutes < 10) ? `0${minutes}` : minutes}m`;
@@ -58,34 +58,41 @@ const getRandomRuntime = () => {
 };
 
 const getThumbnailDescriptions = (descriptions, maxLength, amountOffers) => {
-  const description = descriptions.filter(Utils.getRandomBoolean).slice(0, amountOffers).join(` `);
+  const description = descriptions.filter(Common.getRandomBoolean).slice(0, amountOffers).join(` `);
 
   return (description.length > maxLength) ? `${description.slice(0, maxLength - 1)}…` : description;
 };
 
 const generateCard = () => {
   return {
-    poster: URL_POSTERS[Utils.getRandomNumberFromPeriod(URL_POSTERS.length)],
-    ageLimit: `${Utils.getRandomNumberFromPeriod(AGE_LIMIT_MAX + 1, 7)}`,
-    title: TITLES[Utils.getRandomNumberFromPeriod(TITLES.length)],
+    id: null,
+    poster: URL_POSTERS[Common.getRandomNumberFromPeriod(URL_POSTERS.length)],
+    ageLimit: `${Common.getRandomNumberFromPeriod(AGE_LIMIT_MAX + 1, 7)}`,
+    title: TITLES[Common.getRandomNumberFromPeriod(TITLES.length)],
     rating: getRandomRating(MAX_RATING + 1),
-    yourRate: Utils.getRandomNumberFromPeriod(MAX_RATING + 1),
-    director: DIRECTORS[Utils.getRandomNumberFromPeriod(DIRECTORS.length)],
-    writers: WRITERS.filter(Utils.getRandomBoolean).slice(0, Utils.getRandomNumberFromPeriod(4, 1)).join(`, `),
-    actors: ACTORS.filter(Utils.getRandomBoolean).slice(0, Utils.getRandomNumberFromPeriod(4, 1)).join(`, `),
-    releaseDate: Utils.getRandomDate(),
+    yourRate: Common.getRandomNumberFromPeriod(MAX_RATING + 1),
+    director: DIRECTORS[Common.getRandomNumberFromPeriod(DIRECTORS.length)],
+    writers: WRITERS.filter(Common.getRandomBoolean).slice(0, Common.getRandomNumberFromPeriod(4, 1)).join(`, `),
+    actors: ACTORS.filter(Common.getRandomBoolean).slice(0, Common.getRandomNumberFromPeriod(4, 1)).join(`, `),
+    releaseDate: Common.getRandomDate(),
     runtime: getRandomRuntime(),
-    country: COUNTRY[Utils.getRandomNumberFromPeriod(COUNTRY.length)],
-    genres: GENRES.filter(Utils.getRandomBoolean).slice(2, 6),
+    country: COUNTRY[Common.getRandomNumberFromPeriod(COUNTRY.length)],
+    genres: GENRES.filter(Common.getRandomBoolean).slice(2, 6),
     descriptions: DESCRIPTIONS,
     thumbnailDescription: getThumbnailDescriptions(DESCRIPTIONS, MAX_LENGTH_DESCRIPTION, MAX_AMOUNT_OFFERS),
-    amountComments: Utils.getRandomNumberFromPeriod(500),
-    isWatchlist: Utils.getRandomBoolean(),
-    isWatched: Utils.getRandomBoolean(),
-    isFavorite: Utils.getRandomBoolean(),
+    amountComments: Common.getRandomNumberFromPeriod(500),
+    watchlist: Common.getRandomBoolean(),
+    history: Common.getRandomBoolean(),
+    favorites: Common.getRandomBoolean(),
   };
 };
 
-const generateCards = (amount) => new Array(amount).fill(``).map(generateCard);
+const generateCards = (amount) => new Array(amount)
+  .fill(``)
+  .map((card, i) => {
+    card = generateCard();
+    card.id = i;
+    return card;
+  });
 
 export { generateCards };
