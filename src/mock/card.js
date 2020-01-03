@@ -1,5 +1,6 @@
 import { MAX_RATING } from '../const.js';
 import Common from '../utils/common.js';
+import { generateComments } from '../mock/comments.js';
 
 const TITLES = [
   `The Lord of the Rings`, `Terminator 2: Judgment Day`, `The Shawshank Redemption`, `Forrest Gump`,
@@ -64,6 +65,7 @@ const getThumbnailDescriptions = (descriptions, maxLength, amountOffers) => {
 };
 
 const generateCard = () => {
+  const comments = generateComments(Common.getRandomNumberFromPeriod(10));
   return {
     id: null,
     poster: URL_POSTERS[Common.getRandomNumberFromPeriod(URL_POSTERS.length)],
@@ -80,7 +82,7 @@ const generateCard = () => {
     genres: GENRES.filter(Common.getRandomBoolean).slice(2, 6),
     descriptions: DESCRIPTIONS,
     thumbnailDescription: getThumbnailDescriptions(DESCRIPTIONS, MAX_LENGTH_DESCRIPTION, MAX_AMOUNT_OFFERS),
-    amountComments: Common.getRandomNumberFromPeriod(500),
+    comments,
     watchlist: Common.getRandomBoolean(),
     history: Common.getRandomBoolean(),
     favorites: Common.getRandomBoolean(),

@@ -2,6 +2,7 @@ import AbstractSmartComponent from './abstract-smart-component.js';
 import Common from '../utils/common.js';
 import moment from 'moment';
 import { MAX_RATING } from '../const.js';
+import he from 'he';
 
 const createGenresMarkup = (genres) => {
   const title = genres.length > 1 ? `Genres` : `Genre`;
@@ -61,24 +62,26 @@ const createImageEmojiMarkup = (emojiSrc) => {
 };
 
 
-const createCardDetailsTemplate = (card, comments, option = {}) => {
-  const { releaseDate } = card;
-  const { watchlist, history, favorites, emojiSrc } = option;
+const createCardDetailsTemplate = (card, option = {}) => {
+  const { releaseDate, comments } = card;
+  const { watchlist, history, favorites, emojiSrc, currentCommentText } = option;
   const date = `${moment(releaseDate).format(`DD MMMM YYYY`)}`;
 
   const createCommentsMarkup = (arrComments) => {
     return arrComments.map((comment) => {
+      const text = he.encode(comment.text);
+      const commentDate = moment(comment.date).fromNow();
       return (
         `<li class="film-details__comment">
           <span class="film-details__comment-emoji">
-            <img src="./images/emoji/${comment.urlEmoji}" width="55" height="55" alt="emoji">
+            <img src="${comment.urlEmoji ? comment.urlEmoji : `./images/emoji/smile.png`}" width="55" height="55" alt="emoji">
           </span>
           <div>
-            <p class="film-details__comment-text">${comment.text}"</p>
+            <p class="film-details__comment-text">${text}</p>
             <p class="film-details__comment-info">
               <span class="film-details__comment-author">${comment.author}</span>
-              <span class="film-details__comment-day">${comment.day}</span>
-              <button class="film-details__comment-delete">Delete</button>
+              <span class="film-details__comment-day">${commentDate}</span>
+              <button id="${comment.id}" class="film-details__comment-delete">Delete</button>
             </p>
           </div>
         </li>`
@@ -88,7 +91,7 @@ const createCardDetailsTemplate = (card, comments, option = {}) => {
   };
 
   return (
-    `<section class="film-details" style="animation: none">
+    `<section id="${card.id}" class="film-details" style="animation: none">
       <form class="film-details__inner" action="" method="get">
         <div class="form-details__top-container">
           <div class="film-details__close">
@@ -174,7 +177,7 @@ const createCardDetailsTemplate = (card, comments, option = {}) => {
               <div for="add-emoji" class="film-details__add-emoji-label">${createImageEmojiMarkup(emojiSrc)}</div>
 
               <label class="film-details__comment-label">
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${currentCommentText ? currentCommentText : ``}</textarea>
               </label>
 
               <div class="film-details__emoji-list">
@@ -207,25 +210,35 @@ const createCardDetailsTemplate = (card, comments, option = {}) => {
 };
 
 export default class CardDetails extends AbstractSmartComponent {
-  constructor(card, comments) {
+  constructor(card) {
     super();
     this._card = card;
-    this._comments = comments;
     this._watchlist = this._card.watchlist;
-    this._isWatched = this._card.history;
-    this._isFavorite = this._card.favorites;
-    this._hideCardDetailsHandler = null;
+    this._history = this._card.history;
+    this._favorites = this._card.favorites;
     this._emojiSrc = ``;
+    this._currentCommentText = ``;
+    this._hideCardDetailsHandler = null;
+    this._deleteCommentButtonClickHandler = null;
+    this._submitFormHandler = null;
 
     this._subscribeOnEvents();
+    this._disinfectsCommentText();
   }
 
   getTemplate() {
-    return createCardDetailsTemplate(this._card, this._comments, {
+    return createCardDetailsTemplate(this._card, {
       watchlist: this._watchlist,
-      history: this._isWatched,
-      favorites: this._isFavorite,
+      history: this._history,
+      favorites: this._favorites,
       emojiSrc: this._emojiSrc,
+      currentCommentText: this._currentCommentText,
+    });
+  }
+
+  _disinfectsCommentText() {
+    this._card.comments.forEach((it) => {
+      it.text = he.encode(it.text);
     });
   }
 
@@ -236,10 +249,66 @@ export default class CardDetails extends AbstractSmartComponent {
     this._hideCardDetailsHandler = handler;
   }
 
+  setSubmitFormHandler(handler) {
+    const form = this.getElement().querySelector(`.film-details__inner`);
+
+    form.addEventListener(`keydown`, (evt) => {
+      const isCtrlKey = evt.ctrlKey;
+      const isEnterKey = evt.key === `Enter`;
+      const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+      const TextareaValue = form.elements[`comment`].value;
+      this._currentCommentText = TextareaValue;
+
+      if (isEscKey) {
+        evt.stopPropagation();
+      }
+
+      if (isCtrlKey && isEnterKey && TextareaValue) {
+        const newCommentData = this._getData(form);
+        handler(newCommentData);
+        this._currentCommentText = ``;
+        // form.submit();
+      }
+    });
+
+    this._submitFormHandler = handler;
+  }
+
+  _parseFormData(formData) {
+    return {
+      id: null,
+      urlEmoji: this._emojiSrc,
+      text: formData.get(`comment`),
+      author: null,
+      date: new Date(),
+    };
+  }
+
+  _getData(form) {
+    const formData = new FormData(form);
+
+    return this._parseFormData(formData);
+  }
+
+  setDeleteCommentButtonClickHandler(handler) {
+    this.getElement().querySelector(`.film-details__comments-list`)
+      .addEventListener(`click`, (evt) => {
+        evt.preventDefault();
+
+        if (evt.target.tagName !== `BUTTON`) {
+          return;
+        }
+
+        handler(+evt.target.id);
+      });
+
+    this._deleteCommentButtonClickHandler = handler;
+  }
+
   _subscribeOnEvents() {
     const element = this.getElement();
 
-    element.querySelector(`#watchlist`)
+    element.querySelector(`#watchlist`)// в этом месте по id селектору не работает
       .addEventListener(`click`, () => {
         this._watchlist = !this._watchlist;
 
@@ -248,14 +317,14 @@ export default class CardDetails extends AbstractSmartComponent {
 
     element.querySelector(`#watched`)
       .addEventListener(`click`, () => {
-        this._isWatched = !this._isWatched;
+        this._history = !this._history;
 
         this.reRender();
       });
 
     element.querySelector(`#favorite`)
       .addEventListener(`click`, () => {
-        this._isFavorite = !this._isFavorite;
+        this._favorites = !this._favorites;
 
         this.reRender();
       });
@@ -267,20 +336,27 @@ export default class CardDetails extends AbstractSmartComponent {
 
           this.reRender();
         }
+      });
 
+    element.querySelector(`.film-details__comment-input`)
+      .addEventListener(`input`, (evt) => {
+        this._currentCommentText = evt.target.value;
       });
   }
 
   recoveryListeners() {
     this._subscribeOnEvents();
     this.setHideCardDetailsClickHandler(this._hideCardDetailsHandler);
+    this.setDeleteCommentButtonClickHandler(this._deleteCommentButtonClickHandler);
+    this.setSubmitFormHandler(this._submitFormHandler);
   }
 
   reset() {
     this._watchlist = this._card.watchlist;
-    this._isWatched = this._card.history;
-    this._isFavorite = this._card.favorites;
+    this._history = this._card.history;
+    this._favorites = this._card.favorites;
     this._emojiSrc = ``;
+    this._currentCommentText = ``;
 
     this.reRender();
   }
