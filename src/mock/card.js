@@ -2,21 +2,21 @@ import { MAX_RATING } from '../const.js';
 import Common from '../utils/common.js';
 import { generateComments } from '../mock/comments.js';
 
-const TITLES = [
+const Titles = [
   `The Lord of the Rings`, `Terminator 2: Judgment Day`, `The Shawshank Redemption`, `Forrest Gump`,
   `Schindler\`s List`, `The Green Mile`, `The Godfather`, `The Matrix`, `Gladiator`, `Aliens`,
   `The Intouchables`, `The Silence of the Lambs`, `Pirates of the Caribbean`, `Inception`, `Pulp Fiction`
 ];
-const GENRES = [
+const Genres = [
   `Action`, `Adventure`, `Animation`, `Biography`, `Comedy`, `Crime`, `Drama`, `Family`, `Fantasy`,
   `Film-Noir`, `History`, `Horror`, `Music`, `Musical`, `Mystery`, `Romance`, `Sci-Fi`, `Sport`,
   `Thriller`, `War`, `Western`
 ];
-const URL_POSTERS = [
+const UrlPosters = [
   `made-for-each-other.png`, `popeye-meets-sinbad.png`, `sagebrush-trail.jpg`, `the-dance-of-life.jpg`,
   `santa-claus-conquers-the-martians.jpg`, `the-great-flamarion.jpg`, `the-man-with-the-golden-arm.jpg`
 ];
-const DESCRIPTIONS = [
+const Descriptions = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
   `Cras aliquet varius magna, non porta ligula feugiat eget.`, `Fusce tristique felis at fermentum pharetra.`,
   `Aliquam id orci ut lectus varius viverra.`,
@@ -26,19 +26,19 @@ const DESCRIPTIONS = [
   `Sed sed nisi sed augue convallis suscipit in sed felis.`, `Aliquam erat volutpat.`,
   `Nunc fermentum tortor ac porta dapibus.`, `In rutrum ac purus sit amet tempus.`
 ];
-const DIRECTORS = [
+const Directors = [
   `Steven Spielberg`, `Martin Scorsese`, `Alfred Hitchcock`, `Stanley Kubrick`, `Quentin Tarantino`,
   `Orson Welles`, `Francis Ford Coppola`, `Ridley Scott`, `Akira Kurosawa`, `David Lynch`
 ];
-const WRITERS = [
+const Writers = [
   `Billy Wilder`, `Charlie Kaufman`, `Woody Allen`, `Robert Towne`, `Ethan Coen and Joel Coen`,
   `William Goldman`, `Paul Schrader`, `Oliver Stone`
 ];
-const ACTORS = [
+const Actors = [
   `Judi Dench`, `Robert De Niro`, `Leonardo DiCaprio`, `Morgan Freeman`, `Tom Hanks`, `Anthony Hopkins`,
   `Samuel L. Jackson`, `Frances McDormand`, `Liam Neeson`, `Denzel Washington`, `Will Smith`
 ];
-const COUNTRY = [`USA`, `Italy`, `France`, `Germany`, `British`];
+const Country = [`USA`, `Italy`, `France`, `Germany`, `British`];
 const AGE_LIMIT_MAX = 18;
 const MAX_AMOUNT_OFFERS = 3;
 const MAX_LENGTH_DESCRIPTION = 140;
@@ -68,20 +68,20 @@ const generateCard = () => {
   const comments = generateComments(Common.getRandomNumberFromPeriod(10));
   return {
     id: null,
-    poster: URL_POSTERS[Common.getRandomNumberFromPeriod(URL_POSTERS.length)],
+    poster: UrlPosters[Common.getRandomNumberFromPeriod(UrlPosters.length)],
     ageLimit: `${Common.getRandomNumberFromPeriod(AGE_LIMIT_MAX + 1, 7)}`,
-    title: TITLES[Common.getRandomNumberFromPeriod(TITLES.length)],
+    title: Titles[Common.getRandomNumberFromPeriod(Titles.length)],
     rating: getRandomRating(MAX_RATING + 1),
     yourRate: Common.getRandomNumberFromPeriod(MAX_RATING + 1),
-    director: DIRECTORS[Common.getRandomNumberFromPeriod(DIRECTORS.length)],
-    writers: WRITERS.filter(Common.getRandomBoolean).slice(0, Common.getRandomNumberFromPeriod(4, 1)).join(`, `),
-    actors: ACTORS.filter(Common.getRandomBoolean).slice(0, Common.getRandomNumberFromPeriod(4, 1)).join(`, `),
+    director: Directors[Common.getRandomNumberFromPeriod(Directors.length)],
+    writers: Writers.filter(Common.getRandomBoolean).slice(0, Common.getRandomNumberFromPeriod(4, 1)).join(`, `),
+    actors: Actors.filter(Common.getRandomBoolean).slice(0, Common.getRandomNumberFromPeriod(4, 1)).join(`, `),
     releaseDate: Common.getRandomDate(),
     runtime: getRandomRuntime(),
-    country: COUNTRY[Common.getRandomNumberFromPeriod(COUNTRY.length)],
-    genres: GENRES.filter(Common.getRandomBoolean).slice(2, 6),
-    descriptions: DESCRIPTIONS,
-    thumbnailDescription: getThumbnailDescriptions(DESCRIPTIONS, MAX_LENGTH_DESCRIPTION, MAX_AMOUNT_OFFERS),
+    country: Country[Common.getRandomNumberFromPeriod(Country.length)],
+    genres: Genres.filter(Common.getRandomBoolean).slice(2, 6),
+    descriptions: Descriptions,
+    thumbnailDescription: getThumbnailDescriptions(Descriptions, MAX_LENGTH_DESCRIPTION, MAX_AMOUNT_OFFERS),
     comments,
     watchlist: Common.getRandomBoolean(),
     history: Common.getRandomBoolean(),

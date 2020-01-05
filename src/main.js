@@ -5,7 +5,7 @@ import UserRankComponent from './components/user-rank.js';
 import PageController from './controllers/page.js';
 import CardsModel from './models/cards.js';
 import { generateCards } from './mock/card.js';
-import { AMOUNT_CARDS, VALUES_FOR_USER_RANK, FilterType } from './const.js';
+import { AMOUNT_CARDS, valuesForUserRank, FilterType } from './const.js';
 
 const cards = generateCards(AMOUNT_CARDS);
 const cardsModel = new CardsModel();
@@ -13,7 +13,7 @@ cardsModel.setCards(cards);
 const filterValues = Filter.calcFilterValues(cards, Object.values(FilterType));
 
 const siteHeader = document.querySelector(`.header`);
-Render.renderMarkup(siteHeader, new UserRankComponent(filterValues.history, VALUES_FOR_USER_RANK));
+Render.renderMarkup(siteHeader, new UserRankComponent(filterValues.history, valuesForUserRank));
 
 const siteMain = document.querySelector(`.main`);
 const filterController = new FilterController(siteMain, cardsModel);

@@ -1,7 +1,7 @@
 import CardComponent from '../components/card.js';
 import CardDetailsComponent from '../components/card-details.js';
 import Render from '../utils/render';
-import { INTERACTIVE_ELEMENTS_CARD, Mode } from '../const.js';
+import { interactiveElementsCard, Mode } from '../const.js';
 
 
 export default class CardController {
@@ -98,7 +98,7 @@ export default class CardController {
   _showCardDetailsOnClick(evt) {
     evt.preventDefault();
 
-    if (INTERACTIVE_ELEMENTS_CARD[evt.target.className]) {
+    if (interactiveElementsCard[evt.target.className]) {
       this._onViewChange();
       this._mode = Mode.DETAILS;
       Render.renderMarkup(document.body.lastElementChild, this._cardDetailsComponent, Render.renderPosition().BEFOREBEGIN);

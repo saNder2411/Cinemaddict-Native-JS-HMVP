@@ -1,18 +1,18 @@
 import Common from '../utils/common.js';
 
-const AUTHOR_NAMES = [`Jonas Hilton`, `Cassandra Saunders`, `Tessa Johnson`, `Ellie-Rose Bostock`, `Cassian Croft`,
+const AuthorNames = [`Jonas Hilton`, `Cassandra Saunders`, `Tessa Johnson`, `Ellie-Rose Bostock`, `Cassian Croft`,
   `April Hays`, `Angharad Lowe`, `Ella-Rose Bean`, `Imani Shelton`, `Kaitlyn Vance`];
-const AUTHOR_MESSAGES = [`Interesting setting and a good cast`, `Booooooooooring`, `Very very old. Meh`,
+const AuthorMessages = [`Interesting setting and a good cast`, `Booooooooooring`, `Very very old. Meh`,
   `Almost two hours? Seriously?`];
-const URL_EMOJI = [`./images/emoji/angry.png`, `./images/emoji/puke.png`, `./images/emoji/sleeping.png`, `./images/emoji/smile.png`];
+const UrlEmojis = [`./images/emoji/angry.png`, `./images/emoji/puke.png`, `./images/emoji/sleeping.png`, `./images/emoji/smile.png`];
 
 const generateComment = () => {
   const shift = 60;
   return {
     id: null,
-    urlEmoji: URL_EMOJI[Common.getRandomNumberFromPeriod(URL_EMOJI.length)],
-    text: AUTHOR_MESSAGES[Common.getRandomNumberFromPeriod(AUTHOR_MESSAGES.length)],
-    author: AUTHOR_NAMES[Common.getRandomNumberFromPeriod(AUTHOR_NAMES.length)],
+    urlEmoji: UrlEmojis[Common.getRandomNumberFromPeriod(UrlEmojis.length)],
+    text: AuthorMessages[Common.getRandomNumberFromPeriod(AuthorMessages.length)],
+    author: AuthorNames[Common.getRandomNumberFromPeriod(AuthorNames.length)],
     date: Common.getRandomDate(shift),
   };
 };
