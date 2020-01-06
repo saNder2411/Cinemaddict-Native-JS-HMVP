@@ -1,21 +1,26 @@
-import Utils from './utils.js';
-import FilterComponent from './components/filter.js';
+import Render from './utils/render.js';
+import Filter from './utils/filter.js';
+import FilterController from './controllers/filter.js';
 import UserRankComponent from './components/user-rank.js';
 import PageController from './controllers/page.js';
+import CardsModel from './models/cards.js';
 import { generateCards } from './mock/card.js';
-import { AMOUNT_CARDS, VALUES_FOR_USER_RANK } from './const.js';
+import { AMOUNT_CARDS, valuesForUserRank, FilterType } from './const.js';
 
 const cards = generateCards(AMOUNT_CARDS);
-const filterValues = Utils.calcFilterValues(cards, `isWatchlist`, `isWatched`, `isFavorite`);
+const cardsModel = new CardsModel();
+cardsModel.setCards(cards);
+const filterValues = Filter.calcFilterValues(cards, Object.values(FilterType));
 
 const siteHeader = document.querySelector(`.header`);
-Utils.renderMarkup(siteHeader, new UserRankComponent(filterValues.isWatched, VALUES_FOR_USER_RANK));
+Render.renderMarkup(siteHeader, new UserRankComponent(filterValues.history, valuesForUserRank));
 
 const siteMain = document.querySelector(`.main`);
-Utils.renderMarkup(siteMain, new FilterComponent(filterValues));
+const filterController = new FilterController(siteMain, cardsModel);
+filterController.render();
 
-const pageController = new PageController(siteMain);
-pageController.render(cards);
+const pageController = new PageController(siteMain, cardsModel);
+pageController.render();
 
 const footerStatistic = document.querySelector(`.footer__statistics p`);
 footerStatistic.textContent = `${cards.length} movies inside`;

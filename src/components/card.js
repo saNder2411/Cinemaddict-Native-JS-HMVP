@@ -1,12 +1,12 @@
 import AbstractComponent from './abstract-component.js';
-import Utils from '../utils.js';
+import Common from '../utils/common.js';
 import moment from 'moment';
 
 const CLASS_ACTIVE = `film-card__controls-item--active`;
 
 
 const createCardTemplate = (card) => {
-  const { title, rating, releaseDate, runtime, genres, poster, thumbnailDescription, amountComments, isWatchlist, isWatched, isFavorite } = card;
+  const { title, rating, releaseDate, runtime, genres, poster, thumbnailDescription, comments, watchlist, history, favorites } = card;
 
   return (
     `<article class="film-card">
@@ -19,11 +19,11 @@ const createCardTemplate = (card) => {
       </p>
       <img src="./images/posters/${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${thumbnailDescription}</p>
-      <a class="film-card__comments">${amountComments} comments</a>
+      <a class="film-card__comments">${comments.length} comments</a>
       <form class="film-card__controls">
-        <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${Utils.checksBoolean(isWatchlist, CLASS_ACTIVE)}">Add to watchlist</button>
-        <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${Utils.checksBoolean(isWatched, CLASS_ACTIVE)}">Mark as watched</button>
-        <button class="film-card__controls-item button film-card__controls-item--favorite ${Utils.checksBoolean(isFavorite, CLASS_ACTIVE)}">Mark as favorite</button>
+        <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${Common.checksBoolean(watchlist, CLASS_ACTIVE)}">Add to watchlist</button>
+        <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${Common.checksBoolean(history, CLASS_ACTIVE)}">Mark as watched</button>
+        <button class="film-card__controls-item button film-card__controls-item--favorite ${Common.checksBoolean(favorites, CLASS_ACTIVE)}">Mark as favorite</button>
       </form>
     </article>`
   );
@@ -40,7 +40,7 @@ export default class Card extends AbstractComponent {
     return createCardTemplate(this._card);
   }
 
-  setElementClickHandler(handler) {
+  setElementsClickHandler(handler) {
     this.getElement().addEventListener(`click`, handler);
   }
 

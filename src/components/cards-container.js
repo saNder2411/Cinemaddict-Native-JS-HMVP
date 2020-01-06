@@ -31,6 +31,14 @@ const createCardsContainerTemplate = () => {
 };
 
 export default class CardsContainer extends AbstractComponent {
+  constructor() {
+    super();
+
+    this.mainCardsContainer = this.getElement().querySelector(`.films-list__container`);
+    this.topRatedCardsContainer = this.getElement().querySelector(`.films-list__container--top-rated`);
+    this.mostCommentedCardsContainer = this.getElement().querySelector(`.films-list__container--most-commented`);
+  }
+
   getTemplate() {
     return createCardsContainerTemplate();
   }

@@ -1,7 +1,8 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
-import Utils from "../utils";
+import Common from '../utils/common.js';
 import moment from 'moment';
 import { MAX_RATING } from '../const.js';
+import he from 'he';
 
 const createGenresMarkup = (genres) => {
   const title = genres.length > 1 ? `Genres` : `Genre`;
@@ -20,7 +21,7 @@ const createUserRatingMarkup = (maxRating) => {
     .map((markup, i) => {
       markup = (
         `<input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${i + 1}"
-          id="rating-${i + 1}" ${Utils.checksBoolean((i === maxRating - 1), `checked`)}>
+          id="rating-${i + 1}" ${Common.checksBoolean((i === maxRating - 1), `checked`)}>
         <label class="film-details__user-rating-label" for="rating-${i + 1}">${i + 1}</label>`
       );
       return markup;
@@ -61,24 +62,26 @@ const createImageEmojiMarkup = (emojiSrc) => {
 };
 
 
-const createCardDetailsTemplate = (card, comments, option = {}) => {
-  const { releaseDate } = card;
-  const { isWatchlist, isWatched, isFavorite, emojiSrc } = option;
+const createCardDetailsTemplate = (card, option = {}) => {
+  const { releaseDate, comments } = card;
+  const { watchlist, history, favorites, emojiSrc, currentCommentText } = option;
   const date = `${moment(releaseDate).format(`DD MMMM YYYY`)}`;
 
   const createCommentsMarkup = (arrComments) => {
     return arrComments.map((comment) => {
+      const text = he.encode(comment.text);
+      const commentDate = moment(comment.date).fromNow();
       return (
         `<li class="film-details__comment">
           <span class="film-details__comment-emoji">
-            <img src="./images/emoji/${comment.urlEmoji}" width="55" height="55" alt="emoji">
+            <img src="${comment.urlEmoji ? comment.urlEmoji : `./images/emoji/smile.png`}" width="55" height="55" alt="emoji">
           </span>
           <div>
-            <p class="film-details__comment-text">${comment.text}"</p>
+            <p class="film-details__comment-text">${text}</p>
             <p class="film-details__comment-info">
               <span class="film-details__comment-author">${comment.author}</span>
-              <span class="film-details__comment-day">${comment.day}</span>
-              <button class="film-details__comment-delete">Delete</button>
+              <span class="film-details__comment-day">${commentDate}</span>
+              <button id="${comment.id}" class="film-details__comment-delete">Delete</button>
             </p>
           </div>
         </li>`
@@ -88,7 +91,7 @@ const createCardDetailsTemplate = (card, comments, option = {}) => {
   };
 
   return (
-    `<section class="film-details">
+    `<section id="${card.id}" class="film-details" style="animation: none">
       <form class="film-details__inner" action="" method="get">
         <div class="form-details__top-container">
           <div class="film-details__close">
@@ -110,7 +113,7 @@ const createCardDetailsTemplate = (card, comments, option = {}) => {
 
                 <div class="film-details__rating">
                   <p class="film-details__total-rating">${card.rating}</p>
-                  <p class="film-details__user-rating">Your rate ${Utils.checksBoolean(isWatched, card.yourRate)}</p>
+                  <p class="film-details__user-rating">Your rate ${Common.checksBoolean(history, card.yourRate)}</p>
                 </div>
               </div>
 
@@ -151,17 +154,17 @@ const createCardDetailsTemplate = (card, comments, option = {}) => {
           </div>
 
           <section class="film-details__controls">
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${Utils.checksBoolean(isWatchlist, `checked`)}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${Common.checksBoolean(watchlist, `checked`)}>
             <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist" >Add to watchlist</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${Utils.checksBoolean(isWatched, `checked`)}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${Common.checksBoolean(history, `checked`)}>
             <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite"${Utils.checksBoolean(isFavorite, `checked`)}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite"${Common.checksBoolean(favorites, `checked`)}>
             <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
           </section>
         </div>
-        ${Utils.checksBoolean(isWatched, createUserRatingContainerMarkup(card.poster, card.title))}
+        ${Common.checksBoolean(history, createUserRatingContainerMarkup(card.poster, card.title))}
         <div class="form-details__bottom-container">
           <section class="film-details__comments-wrap">
             <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
@@ -174,7 +177,7 @@ const createCardDetailsTemplate = (card, comments, option = {}) => {
               <div for="add-emoji" class="film-details__add-emoji-label">${createImageEmojiMarkup(emojiSrc)}</div>
 
               <label class="film-details__comment-label">
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${currentCommentText ? currentCommentText : ``}</textarea>
               </label>
 
               <div class="film-details__emoji-list">
@@ -207,25 +210,35 @@ const createCardDetailsTemplate = (card, comments, option = {}) => {
 };
 
 export default class CardDetails extends AbstractSmartComponent {
-  constructor(card, comments) {
+  constructor(card) {
     super();
     this._card = card;
-    this._comments = comments;
-    this._isWatchlist = this._card.isWatchlist;
-    this._isWatched = this._card.isWatched;
-    this._isFavorite = this._card.isFavorite;
-    this._hideCardDetailsHandler = null;
+    this._watchlist = this._card.watchlist;
+    this._history = this._card.history;
+    this._favorites = this._card.favorites;
     this._emojiSrc = ``;
+    this._currentCommentText = ``;
+    this._hideCardDetailsHandler = null;
+    this._deleteCommentButtonClickHandler = null;
+    this._submitFormHandler = null;
 
     this._subscribeOnEvents();
+    this._disinfectsCommentText();
   }
 
   getTemplate() {
-    return createCardDetailsTemplate(this._card, this._comments, {
-      isWatchlist: this._isWatchlist,
-      isWatched: this._isWatched,
-      isFavorite: this._isFavorite,
+    return createCardDetailsTemplate(this._card, {
+      watchlist: this._watchlist,
+      history: this._history,
+      favorites: this._favorites,
       emojiSrc: this._emojiSrc,
+      currentCommentText: this._currentCommentText,
+    });
+  }
+
+  _disinfectsCommentText() {
+    this._card.comments.forEach((it) => {
+      it.text = he.encode(it.text);
     });
   }
 
@@ -236,26 +249,82 @@ export default class CardDetails extends AbstractSmartComponent {
     this._hideCardDetailsHandler = handler;
   }
 
+  setSubmitFormHandler(handler) {
+    const form = this.getElement().querySelector(`.film-details__inner`);
+
+    form.addEventListener(`keydown`, (evt) => {
+      const isCtrlKey = evt.ctrlKey;
+      const isEnterKey = evt.key === `Enter`;
+      const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+      const TextareaValue = form.elements[`comment`].value;
+      this._currentCommentText = TextareaValue;
+
+      if (isEscKey) {
+        evt.stopPropagation();
+      }
+
+      if (isCtrlKey && isEnterKey && TextareaValue) {
+        const newCommentData = this._getData(form);
+        handler(newCommentData);
+        this._currentCommentText = ``;
+        // form.submit();
+      }
+    });
+
+    this._submitFormHandler = handler;
+  }
+
+  _parseFormData(formData) {
+    return {
+      id: null,
+      urlEmoji: this._emojiSrc,
+      text: formData.get(`comment`),
+      author: null,
+      date: new Date(),
+    };
+  }
+
+  _getData(form) {
+    const formData = new FormData(form);
+
+    return this._parseFormData(formData);
+  }
+
+  setDeleteCommentButtonClickHandler(handler) {
+    this.getElement().querySelector(`.film-details__comments-list`)
+      .addEventListener(`click`, (evt) => {
+        evt.preventDefault();
+
+        if (evt.target.tagName !== `BUTTON`) {
+          return;
+        }
+
+        handler(+evt.target.id);
+      });
+
+    this._deleteCommentButtonClickHandler = handler;
+  }
+
   _subscribeOnEvents() {
     const element = this.getElement();
 
-    element.querySelector(`#watchlist`)
+    element.querySelector(`#watchlist`)// в этом месте по id селектору не работает
       .addEventListener(`click`, () => {
-        this._isWatchlist = !this._isWatchlist;
+        this._watchlist = !this._watchlist;
 
         this.reRender();
       });
 
     element.querySelector(`#watched`)
       .addEventListener(`click`, () => {
-        this._isWatched = !this._isWatched;
+        this._history = !this._history;
 
         this.reRender();
       });
 
     element.querySelector(`#favorite`)
       .addEventListener(`click`, () => {
-        this._isFavorite = !this._isFavorite;
+        this._favorites = !this._favorites;
 
         this.reRender();
       });
@@ -267,20 +336,27 @@ export default class CardDetails extends AbstractSmartComponent {
 
           this.reRender();
         }
+      });
 
+    element.querySelector(`.film-details__comment-input`)
+      .addEventListener(`input`, (evt) => {
+        this._currentCommentText = evt.target.value;
       });
   }
 
   recoveryListeners() {
     this._subscribeOnEvents();
     this.setHideCardDetailsClickHandler(this._hideCardDetailsHandler);
+    this.setDeleteCommentButtonClickHandler(this._deleteCommentButtonClickHandler);
+    this.setSubmitFormHandler(this._submitFormHandler);
   }
 
   reset() {
-    this._isWatchlist = this._card.isWatchlist;
-    this._isWatched = this._card.isWatched;
-    this._isFavorite = this._card.isFavorite;
+    this._watchlist = this._card.watchlist;
+    this._history = this._card.history;
+    this._favorites = this._card.favorites;
     this._emojiSrc = ``;
+    this._currentCommentText = ``;
 
     this.reRender();
   }
