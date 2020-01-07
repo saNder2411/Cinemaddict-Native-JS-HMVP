@@ -1,7 +1,6 @@
 import Render from '../utils/render.js';
 import SortComponent from '../components/sort.js';
 import NoCardsComponent from '../components/no-cards.js';
-import StatisticComponent from '../components/statistic.js';
 import CardsContainerComponent from '../components/cards-container.js';
 import ShowMoreButtonComponent from '../components/show-more-button.js';
 import CardController from './card.js';
@@ -52,12 +51,11 @@ export default class PageController {
     this._showingCardsAmount = SHOWING_CARDS_AMOUNT_ON_START;
     this._sortComponent = new SortComponent();
     this._noCardsComponent = new NoCardsComponent();
-    this._statisticComponent = new StatisticComponent();
     this._cardsContainerComponent = new CardsContainerComponent();
-    this._showMoreButtonComponent = new ShowMoreButtonComponent();
     this._mainCardsContainer = this._cardsContainerComponent.mainCardsContainer;
     this._topRatedCardsContainer = this._cardsContainerComponent.topRatedCardsContainer;
     this._mostCommentedCardsContainer = this._cardsContainerComponent.mostCommentedCardsContainer;
+    this._showMoreButtonComponent = new ShowMoreButtonComponent();
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
@@ -71,6 +69,16 @@ export default class PageController {
     this._cardsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
+  show() {
+    this._sortComponent.show();
+    this._cardsContainerComponent.show();
+  }
+
+  hide() {
+    this._sortComponent.hide();
+    this._cardsContainerComponent.hide();
+  }
+
   render() {
     const cards = this._cardsModel.getCards();
     const allCards = this._cardsModel.getCardsAll();
@@ -82,7 +90,6 @@ export default class PageController {
     }
 
     Render.renderMarkup(this._container, this._sortComponent);
-    // Render.renderMarkup(this._container, this._statisticComponent);
     Render.renderMarkup(this._container, this._cardsContainerComponent);
 
     this._renderCards(cards.slice(0, this._showingCardsAmount));

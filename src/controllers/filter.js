@@ -33,9 +33,15 @@ export default class FilterController {
     }
   }
 
+  getFilterComponent() {
+    return this._filterComponent;
+  }
+
   _onFilterChange(filterType) {
-    this._cardsModel.setFilter(filterType);
-    this._activeFilterType = filterType;
+    if (filterType !== FilterType.STATISTICS) {
+      this._cardsModel.setFilter(filterType);
+      this._activeFilterType = filterType;
+    }
   }
 
   _onDataChange() {
