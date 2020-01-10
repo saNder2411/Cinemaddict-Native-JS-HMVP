@@ -1,5 +1,6 @@
 import { MAX_RATING } from '../const.js';
 import Common from '../utils/common.js';
+import { TimeShiftInMin } from '../const.js';
 import { generateComments } from '../mock/comments.js';
 
 const Titles = [
@@ -8,9 +9,8 @@ const Titles = [
   `The Intouchables`, `The Silence of the Lambs`, `Pirates of the Caribbean`, `Inception`, `Pulp Fiction`
 ];
 const Genres = [
-  `Action`, `Adventure`, `Animation`, `Biography`, `Comedy`, `Crime`, `Drama`, `Family`, `Fantasy`,
-  `Film-Noir`, `History`, `Horror`, `Music`, `Musical`, `Mystery`, `Romance`, `Sci-Fi`, `Sport`,
-  `Thriller`, `War`, `Western`
+  `Animation`, `Biography`, `Comedy`, `Drama`, `Fantasy`,
+  `History`, `Sci-Fi`, `Sport`, `Thriller`, `War`, `TV Series`
 ];
 const UrlPosters = [
   `made-for-each-other.png`, `popeye-meets-sinbad.png`, `sagebrush-trail.jpg`, `the-dance-of-life.jpg`,
@@ -66,7 +66,7 @@ const getThumbnailDescriptions = (descriptions, maxLength, amountOffers) => {
 
 const generateCard = () => {
   const comments = generateComments(Common.getRandomNumberFromPeriod(10));
-  return {
+  const mockCard = {
     id: null,
     poster: UrlPosters[Common.getRandomNumberFromPeriod(UrlPosters.length)],
     ageLimit: `${Common.getRandomNumberFromPeriod(AGE_LIMIT_MAX + 1, 7)}`,
@@ -86,7 +86,12 @@ const generateCard = () => {
     watchlist: Common.getRandomBoolean(),
     history: Common.getRandomBoolean(),
     favorites: Common.getRandomBoolean(),
+    historyDate: null,
   };
+
+  mockCard.historyDate = mockCard.history ? Common.getRandomDate(TimeShiftInMin.YEAR) : null;
+
+  return mockCard;
 };
 
 const generateCards = (amount) => new Array(amount)
@@ -97,4 +102,4 @@ const generateCards = (amount) => new Array(amount)
     return card;
   });
 
-export { generateCards };
+export { generateCards, Genres };

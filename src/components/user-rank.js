@@ -1,15 +1,7 @@
 import AbstractComponent from './abstract-component.js';
 
-const createUserRankTemplate = (amountWatched, minValRank, middleJrValRank, middleValRank, maxValRank) => {
-  let rank = ``;
+const createUserRankTemplate = (rank) => {
 
-  if (amountWatched >= minValRank && amountWatched <= middleJrValRank) {
-    rank = `novice`;
-  } else if (amountWatched >= middleValRank && amountWatched <= maxValRank) {
-    rank = `fan`;
-  } else if (amountWatched > maxValRank) {
-    rank = `movie buff`;
-  }
 
   return (
     `<section class="header__profile profile">
@@ -21,13 +13,12 @@ const createUserRankTemplate = (amountWatched, minValRank, middleJrValRank, midd
 };
 
 export default class UserRank extends AbstractComponent {
-  constructor(amountWatched, rankValues) {
+  constructor(rank) {
     super();
-    this._amountWatched = amountWatched;
-    this._rankValues = rankValues;
+    this._rank = rank;
   }
 
   getTemplate() {
-    return createUserRankTemplate(this._amountWatched, ...this._rankValues);
+    return createUserRankTemplate(this._rank);
   }
 }
