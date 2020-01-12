@@ -267,7 +267,6 @@ export default class CardDetails extends AbstractSmartComponent {
         const newCommentData = this._getData(form);
         handler(newCommentData);
         this._currentCommentText = ``;
-        // form.submit();
       }
     });
 

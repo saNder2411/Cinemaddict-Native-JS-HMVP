@@ -1,16 +1,17 @@
 import AbstractComponent from './abstract-component.js';
 import { FilterType } from '../const.js';
 
+
 const createFiltersTemplate = (filterValues) => {
   const { watchlist, history, favorites } = filterValues;
 
   return (
     `<nav class="main-navigation">
-      <a href="#all" id="${FilterType.ALL}" class="main-navigation__item">All movies</a>
+      <a href="#all" id="${FilterType.ALL}" class="main-navigation__item main-navigation__item--active">All movies</a>
       <a href="#watchlist" id="${FilterType.WATCHLIST}" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">${watchlist}</span></a>
       <a href="#history" id="${FilterType.HISTORY}" class="main-navigation__item">History <span class="main-navigation__item-count">${history}</span></a>
       <a href="#favorites" id="${FilterType.FAVORITES}" class="main-navigation__item">Favorites <span class="main-navigation__item-count">${favorites}</span></a>
-      <a href="#stats" class="main-navigation__item main-navigation__item--additional main-navigation__item--active">Stats</a>
+      <a href="#stats" id="${FilterType.STATISTICS}" class="main-navigation__item main-navigation__item--additional">Stats</a>
     </nav>`
   );
 };
@@ -29,7 +30,7 @@ export default class Filter extends AbstractComponent {
     this.getElement().addEventListener(`click`, (evt) => {
       evt.preventDefault();
 
-      if (!evt.target.classList.contains(`main-navigation__item--additional`)) {
+      if (evt.target.tagName === `A`) {
         this.getElement().querySelector(`.main-navigation__item--active`)
           .classList.remove(`main-navigation__item--active`);
 
