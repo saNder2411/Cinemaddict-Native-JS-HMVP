@@ -44,7 +44,7 @@ export default class Cards {
   }
 
   addComment(card, newCommentData) {
-    newCommentData.id = -card.comments.length;
+    newCommentData.id = new Date().getTime();
     card.comments = [].concat(newCommentData, card.comments);
     this._callHandlers(this._dataChangeHandlers);
   }

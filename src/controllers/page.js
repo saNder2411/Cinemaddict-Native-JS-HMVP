@@ -25,12 +25,12 @@ const renderExtraCards = (container, cards, onDataChange, onViewChange, onCommen
       if (a[sortProp] instanceof Array) {
         return b[sortProp].length - a[sortProp].length;
       }
-      return b[sortProp] - a[sortProp];
+      return b.cardInfo[sortProp] - a.cardInfo[sortProp];
     })
     .slice(0, EXTRA_AMOUNT_CARDS)
     .map((card) => {
       const cardController = new CardController(container, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd);
-      const sortPropValue = card[sortProp] instanceof Array ? card[sortProp].length : card[sortProp];
+      const sortPropValue = card[sortProp] instanceof Array ? card[sortProp].length : card.cardInfo[sortProp];
 
       if (sortPropValue > 0) {
         cardController.render(card, Mode.DEFAULT);
@@ -42,9 +42,10 @@ const renderExtraCards = (container, cards, onDataChange, onViewChange, onCommen
 
 
 export default class PageController {
-  constructor(container, cardsModel) {
+  constructor(container, cardsModel, api) {
     this._container = container;
     this._cardsModel = cardsModel;
+    this._api = api;
 
     this._showedCardControllers = [];
     this._showedExtraCardControllers = [];
@@ -105,7 +106,7 @@ export default class PageController {
   }
 
   _renderExtraCards(cards) {
-    const newExtraCardsRating = renderExtraCards(this._topRatedCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, `rating`);
+    const newExtraCardsRating = renderExtraCards(this._topRatedCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, `totalRating`);
     const newExtraCardsComment = renderExtraCards(this._mostCommentedCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, `comments`);
     this._showedExtraCardControllers = this._showedExtraCardControllers.concat(newExtraCardsRating, newExtraCardsComment);
   }
@@ -152,19 +153,24 @@ export default class PageController {
 
   _isSuccessDataChange(cardController, card, newDataCard) {
     if (newDataCard) {
-      const isSuccess = this._cardsModel.updateCard(card.id, newDataCard);
+      this._api.updateCard(card.id, newDataCard)
+        .then((cardModel) => {
+          const isSuccess = this._cardsModel.updateCard(card.id, cardModel);
 
-      if (isSuccess) {
-        cardController.render(newDataCard, Mode.DEFAULT);
-      }
+          if (isSuccess) {
+            cardController.render(cardModel, Mode.DEFAULT);
+            this._updateCards(this._showingCardsAmount);
+          }
+        });
+
       return;
     }
 
     const isSuccess = this._cardsModel.updateCard(card.id, card);
 
     if (isSuccess) {
-      this._updateCards(this._showingCardsAmount);
       cardController.render(card, Mode.ADDING);
+      this._updateCards(this._showingCardsAmount);
     }
   }
 
@@ -194,10 +200,10 @@ export default class PageController {
 
     switch (sortType) {
       case SortType.DATE:
-        sortedCards = cards.slice().sort((a, b) => b.releaseDate - a.releaseDate);
+        sortedCards = cards.slice().sort((a, b) => new Date(b.cardInfo.release.date).getTime() - new Date(a.cardInfo.release.date).getTime());
         break;
       case SortType.RATING:
-        sortedCards = cards.slice().sort((a, b) => b.rating - a.rating);
+        sortedCards = cards.slice().sort((a, b) => b.cardInfo.totalRating - a.cardInfo.totalRating);
         break;
       case SortType.DEFAULT:
         sortedCards = cards.slice(0, this._showingCardsAmount);

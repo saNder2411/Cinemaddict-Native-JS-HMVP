@@ -1,8 +1,8 @@
 import CardComponent from '../components/card.js';
 import CardDetailsComponent from '../components/card-details.js';
+import CardModel from '../models/card.js';
 import Render from '../utils/render';
-import { interactiveElementsCard, Mode } from '../const.js';
-
+import { InteractiveElementsCard, Mode } from '../const.js';
 
 export default class CardController {
   constructor(container, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd) {
@@ -33,21 +33,24 @@ export default class CardController {
     this._cardComponent.setElementsClickHandler(this._showCardDetailsOnClick);
 
     this._cardComponent.setWatchlistButtonClickHandler(() => {
-      this._onDataChange(this, card, Object.assign({}, card, {
-        watchlist: !card.watchlist,
-      }));
+      const newCard = CardModel.clone(card);
+      newCard.userDetails.watchlist = !newCard.userDetails.watchlist;
+
+      this._onDataChange(this, card, newCard);
     });
 
     this._cardComponent.setWatchedButtonClickHandler(() => {
-      this._onDataChange(this, card, Object.assign({}, card, {
-        history: !card.history,
-      }));
+      const newCard = CardModel.clone(card);
+      newCard.userDetails.alreadyWatched = !newCard.userDetails.alreadyWatched;
+
+      this._onDataChange(this, card, newCard);
     });
 
     this._cardComponent.setFavoriteButtonClickHandler(() => {
-      this._onDataChange(this, card, Object.assign({}, card, {
-        favorites: !card.favorites,
-      }));
+      const newCard = CardModel.clone(card);
+      newCard.userDetails.favorite = !newCard.userDetails.favorite;
+
+      this._onDataChange(this, card, newCard);
     });
 
     this._cardDetailsComponent.setHideCardDetailsClickHandler(this._hideCardDetailsOnClick);
@@ -81,6 +84,16 @@ export default class CardController {
     }
   }
 
+  _parseFormData(formData) {
+    return {
+      'id': null,
+      'author': null,
+      'comment': formData.get(`comment`),
+      'date': new Date(),
+      'emotion': formData.emotion,
+    };
+  }
+
   destroy() {
     Render.remove(this._cardComponent);
     Render.remove(this._cardDetailsComponent);
@@ -98,7 +111,7 @@ export default class CardController {
   _showCardDetailsOnClick(evt) {
     evt.preventDefault();
 
-    if (interactiveElementsCard[evt.target.className]) {
+    if (InteractiveElementsCard[evt.target.className]) {
       this._onViewChange();
       this._mode = Mode.DETAILS;
       Render.renderMarkup(document.body.lastElementChild, this._cardDetailsComponent, Render.renderPosition().BEFOREBEGIN);

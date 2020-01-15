@@ -3,14 +3,14 @@ import { FilterType } from '../const.js';
 
 
 const createFiltersTemplate = (filterValues) => {
-  const { watchlist, history, favorites } = filterValues;
+  const { watchlist, alreadyWatched, favorite } = filterValues;
 
   return (
     `<nav class="main-navigation">
       <a href="#all" id="${FilterType.ALL}" class="main-navigation__item main-navigation__item--active">All movies</a>
       <a href="#watchlist" id="${FilterType.WATCHLIST}" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">${watchlist}</span></a>
-      <a href="#history" id="${FilterType.HISTORY}" class="main-navigation__item">History <span class="main-navigation__item-count">${history}</span></a>
-      <a href="#favorites" id="${FilterType.FAVORITES}" class="main-navigation__item">Favorites <span class="main-navigation__item-count">${favorites}</span></a>
+      <a href="#history" id="${FilterType.ALREADY_WATCHED}" class="main-navigation__item">History <span class="main-navigation__item-count">${alreadyWatched}</span></a>
+      <a href="#favorites" id="${FilterType.FAVORITE}" class="main-navigation__item">Favorites <span class="main-navigation__item-count">${favorite}</span></a>
       <a href="#stats" id="${FilterType.STATISTICS}" class="main-navigation__item main-navigation__item--additional">Stats</a>
     </nav>`
   );
