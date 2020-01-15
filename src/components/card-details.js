@@ -63,11 +63,9 @@ const createImageEmojiMarkup = (emotion) => {
 
 
 const createCardDetailsTemplate = (card, option = {}) => {
-  // console.log(card);
   const {
     id,
     comments,
-    loadComments,
     cardInfo: {
       title,
       totalRating,
@@ -92,29 +90,6 @@ const createCardDetailsTemplate = (card, option = {}) => {
   const formateDate = `${moment(date).format(`DD MMMM YYYY`)}`;
   const duration = Common.getTimeInHoursAndMinutes(runtime);
   const formatDuration = Common.getRuntimeInString(duration);
-
-  const createCommentsMarkup = (arrComments) => {
-    return arrComments.map((it) => {
-      const text = he.encode(it.comment);
-      const commentDate = moment(it.date).fromNow();
-      return (
-        `<li class="film-details__comment">
-          <span class="film-details__comment-emoji">
-            <img src="./images/emoji/${it.emotion ? it.emotion : `smile`}.png" width="55" height="55" alt="emoji">
-          </span>
-          <div>
-            <p class="film-details__comment-text">${text}</p>
-            <p class="film-details__comment-info">
-              <span class="film-details__comment-author">${it.author}</span>
-              <span class="film-details__comment-day">${commentDate}</span>
-              <button id="${it.id}" class="film-details__comment-delete">Delete</button>
-            </p>
-          </div>
-        </li>`
-      );
-    })
-      .join(`\n`);
-  };
 
   return (
     `<section id="${id}" class="film-details" style="animation: none">
@@ -196,7 +171,6 @@ const createCardDetailsTemplate = (card, option = {}) => {
             <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
             <ul class="film-details__comments-list">
-              ${createCommentsMarkup(loadComments)}
             </ul>
 
             <div class="film-details__new-comment">
@@ -249,7 +223,7 @@ export default class CardDetails extends AbstractSmartComponent {
     this._submitFormHandler = null;
 
     this._subscribeOnEvents();
-    this._disinfectsCommentText();
+    this.renderCommentsMarkup = this.renderCommentsMarkup.bind(this);
   }
 
   getTemplate() {
@@ -262,8 +236,36 @@ export default class CardDetails extends AbstractSmartComponent {
     });
   }
 
-  _disinfectsCommentText() {
-    this._card.loadComments.forEach((it) => {
+  renderCommentsMarkup(comments) {
+    const commentsContainer = this.getElement().querySelector(`.film-details__comments-list`);
+    this._disinfectsCommentText(comments);
+
+    const commentsMarkup = comments.map((it) => {
+      const text = he.encode(it.comment);
+      const commentDate = moment(it.date).fromNow();
+      return (
+        `<li class="film-details__comment">
+          <span class="film-details__comment-emoji">
+            <img src="./images/emoji/${it.emotion ? it.emotion : `smile`}.png" width="55" height="55" alt="emoji">
+          </span>
+          <div>
+            <p class="film-details__comment-text">${text}</p>
+            <p class="film-details__comment-info">
+              <span class="film-details__comment-author">${it.author}</span>
+              <span class="film-details__comment-day">${commentDate}</span>
+              <button id="${it.id}" class="film-details__comment-delete">Delete</button>
+            </p>
+          </div>
+        </li>`
+      );
+    })
+      .join(`\n`);
+
+    commentsContainer.insertAdjacentHTML(`beforeend`, commentsMarkup);
+  }
+
+  _disinfectsCommentText(comments) {
+    comments.forEach((it) => {
       it.comment = he.encode(it.comment);
     });
   }

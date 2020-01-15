@@ -9,16 +9,16 @@ import {
   SHOWING_CARDS_AMOUNT_BY_BUTTON, SortType, Mode
 } from '../const.js';
 
-const renderCards = (cardsContainer, cards, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd) => {
+const renderCards = (cardsContainer, cards, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, api) => {
   return cards.map((card) => {
-    const cardController = new CardController(cardsContainer, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd);
+    const cardController = new CardController(cardsContainer, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, api);
     cardController.render(card, Mode.DEFAULT);
 
     return cardController;
   });
 };
 
-const renderExtraCards = (container, cards, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, sortProp) => {
+const renderExtraCards = (container, cards, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, sortProp, api) => {
   return cards
     .slice()
     .sort((a, b) => {
@@ -29,7 +29,7 @@ const renderExtraCards = (container, cards, onDataChange, onViewChange, onCommen
     })
     .slice(0, EXTRA_AMOUNT_CARDS)
     .map((card) => {
-      const cardController = new CardController(container, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd);
+      const cardController = new CardController(container, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, api);
       const sortPropValue = card[sortProp] instanceof Array ? card[sortProp].length : card.cardInfo[sortProp];
 
       if (sortPropValue > 0) {
@@ -100,14 +100,14 @@ export default class PageController {
   }
 
   _renderCards(cards) {
-    const newCards = renderCards(this._mainCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd);
+    const newCards = renderCards(this._mainCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, this._api);
     this._showedCardControllers = this._showedCardControllers.concat(newCards);
     this._showingCardsAmount = this._showedCardControllers.length;
   }
 
   _renderExtraCards(cards) {
-    const newExtraCardsRating = renderExtraCards(this._topRatedCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, `totalRating`);
-    const newExtraCardsComment = renderExtraCards(this._mostCommentedCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, `comments`);
+    const newExtraCardsRating = renderExtraCards(this._topRatedCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, `totalRating`, this._api);
+    const newExtraCardsComment = renderExtraCards(this._mostCommentedCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, `comments`, this._api);
     this._showedExtraCardControllers = this._showedExtraCardControllers.concat(newExtraCardsRating, newExtraCardsComment);
   }
 

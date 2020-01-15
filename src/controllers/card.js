@@ -5,14 +5,16 @@ import Render from '../utils/render';
 import { InteractiveElementsCard, Mode } from '../const.js';
 
 export default class CardController {
-  constructor(container, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd) {
+  constructor(container, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, api) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
     this._onCommentDataDelete = onCommentDataDelete;
     this._onCommentDataAdd = onCommentDataAdd;
+    this._api = api;
 
     this._mode = Mode.DEFAULT;
+    this._cardId = null;
 
     this._cardComponent = null;
     this._cardDetailsComponent = null;
@@ -26,6 +28,7 @@ export default class CardController {
     const oldCardComponent = this._cardComponent;
     const oldCardDetailsComponent = this._cardDetailsComponent;
     this._mode = mode;
+    this._cardId = card.id;
 
     this._cardComponent = new CardComponent(card);
     this._cardDetailsComponent = new CardDetailsComponent(card);
@@ -116,6 +119,9 @@ export default class CardController {
       this._mode = Mode.DETAILS;
       Render.renderMarkup(document.body.lastElementChild, this._cardDetailsComponent, Render.renderPosition().BEFOREBEGIN);
       document.addEventListener(`keydown`, this._onEscKeyDown);
+
+      this._api.getComments(this._cardId)
+        .then(this._cardDetailsComponent.renderCommentsMarkup);
     }
   }
 

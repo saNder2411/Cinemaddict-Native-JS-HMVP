@@ -1,7 +1,6 @@
 export default class Card {
   constructor(data) {
     this.id = data[`id`];
-    this.loadComments = data[`loadComments`];
     this.comments = data[`comments`];
     this.cardInfo = {};
     this.cardInfo.title = data[`film_info`][`title`];

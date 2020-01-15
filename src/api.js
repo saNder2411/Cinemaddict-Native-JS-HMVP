@@ -25,9 +25,6 @@ export default class API {
   constructor(endPoint, authorization) {
     this._endPoint = endPoint;
     this._authorization = authorization;
-
-    this._setCommentsCard = this._setCommentsCard.bind(this);
-    this._getCommentsCard = this._getCommentsCard.bind(this);
   }
 
   _load({ url, method = Method.GET, headers = new Headers(), body = null }) {
@@ -43,23 +40,13 @@ export default class API {
   getCards() {
     return this._load({ url: `movies` })
       .then((response) => response.json())
-      .then(this._setCommentsCard)
-      .then((cards) => Promise.all(cards));
+      .then(CardModel.parseCards);
   }
 
-  _setCommentsCard(cards) {
-    return cards.map(this._getCommentsCard);
-  }
-
-  _getCommentsCard(card) {
-    return this._load({ url: `comments/${card[`id`]}` })
+  getComments(cardId) {
+    return this._load({ url: `comments/${cardId}` })
       .then((response) => response.json())
-      .then(CommentModel.parseComments)
-      .then((comments) => {
-        card[`loadComments`] = comments;
-        return card;
-      })
-      .then(CardModel.parseCard);
+      .then(CommentModel.parseComments);
   }
 
   updateCard(oldCardId, newCard) {
@@ -71,7 +58,6 @@ export default class API {
     })
       .then((response) => response.json())
       .then(CardModel.parseCard);
-
   }
 
   createComment() {
