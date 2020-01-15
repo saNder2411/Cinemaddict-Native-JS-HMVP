@@ -212,6 +212,7 @@ export default class PageController {
 
     this._removeCards();
     this._renderCards(sortedCards);
+    this._renderExtraCards(this._cardsModel.getCardsAll());
 
     if (sortType === SortType.DEFAULT) {
       this._renderShowMoreButton();
