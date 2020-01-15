@@ -218,6 +218,8 @@ export default class CardDetails extends AbstractSmartComponent {
     this._favorite = this._card.userDetails.favorite;
     this._emotion = ``;
     this._currentCommentText = ``;
+    this._comments = [];
+
     this._hideCardDetailsHandler = null;
     this._deleteCommentButtonClickHandler = null;
     this._submitFormHandler = null;
@@ -237,6 +239,8 @@ export default class CardDetails extends AbstractSmartComponent {
   }
 
   renderCommentsMarkup(comments) {
+    this._comments = comments;
+
     const commentsContainer = this.getElement().querySelector(`.film-details__comments-list`);
     this._disinfectsCommentText(comments);
 
@@ -331,6 +335,7 @@ export default class CardDetails extends AbstractSmartComponent {
         this._watchlist = !this._watchlist;
 
         this.reRender();
+        this.renderCommentsMarkup(this._comments);
       });
 
     element.querySelector(`.film-details__control-label--watched`)
@@ -338,6 +343,7 @@ export default class CardDetails extends AbstractSmartComponent {
         this._alreadyWatched = !this._alreadyWatched;
 
         this.reRender();
+        this.renderCommentsMarkup(this._comments);
       });
 
     element.querySelector(`.film-details__control-label--favorite`)
@@ -345,6 +351,7 @@ export default class CardDetails extends AbstractSmartComponent {
         this._favorite = !this._favorite;
 
         this.reRender();
+        this.renderCommentsMarkup(this._comments);
       });
 
     element.querySelector(`.film-details__emoji-list`)
@@ -353,6 +360,7 @@ export default class CardDetails extends AbstractSmartComponent {
           this._emotion = evt.target.value;
 
           this.reRender();
+          this.renderCommentsMarkup(this._comments);
         }
       });
 
