@@ -120,11 +120,11 @@ export default class CardController {
       Render.renderMarkup(document.body.lastElementChild, this._cardDetailsComponent, Render.renderPosition().BEFOREBEGIN);
       document.addEventListener(`keydown`, this._onEscKeyDown);
 
-      this.renderComments();
+      this._renderComments();
     }
   }
 
-  renderComments() {
+  _renderComments() {
     this._api.getComments(this._cardId)
       .then(this._cardDetailsComponent.renderCommentsMarkup);
   }
