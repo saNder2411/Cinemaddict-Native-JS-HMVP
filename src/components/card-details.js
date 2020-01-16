@@ -39,7 +39,7 @@ const createUserRatingContainerMarkup = (poster, title) => {
 
         <div class="film-details__user-score">
           <div class="film-details__user-rating-poster">
-            <img src="./images/posters/${poster}" alt="film-poster" class="film-details__user-rating-img">
+            <img src="./${poster}" alt="film-poster" class="film-details__user-rating-img">
           </div>
 
           <section class="film-details__user-rating-inner">
@@ -57,41 +57,42 @@ const createUserRatingContainerMarkup = (poster, title) => {
   );
 };
 
-const createImageEmojiMarkup = (emojiSrc) => {
-  return emojiSrc ? (`<img src="${emojiSrc}" width="55" height="55" alt="emoji">`) : ``;
+const createImageEmojiMarkup = (emotion) => {
+  return emotion ? (`<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji">`) : ``;
 };
 
 
 const createCardDetailsTemplate = (card, option = {}) => {
-  const { releaseDate, comments } = card;
-  const { watchlist, history, favorites, emojiSrc, currentCommentText } = option;
-  const date = `${moment(releaseDate).format(`DD MMMM YYYY`)}`;
-
-  const createCommentsMarkup = (arrComments) => {
-    return arrComments.map((comment) => {
-      const text = he.encode(comment.text);
-      const commentDate = moment(comment.date).fromNow();
-      return (
-        `<li class="film-details__comment">
-          <span class="film-details__comment-emoji">
-            <img src="${comment.urlEmoji ? comment.urlEmoji : `./images/emoji/smile.png`}" width="55" height="55" alt="emoji">
-          </span>
-          <div>
-            <p class="film-details__comment-text">${text}</p>
-            <p class="film-details__comment-info">
-              <span class="film-details__comment-author">${comment.author}</span>
-              <span class="film-details__comment-day">${commentDate}</span>
-              <button id="${comment.id}" class="film-details__comment-delete">Delete</button>
-            </p>
-          </div>
-        </li>`
-      );
-    })
-      .join(`\n`);
-  };
+  const {
+    id,
+    comments,
+    cardInfo: {
+      title,
+      totalRating,
+      poster,
+      ageRating,
+      director,
+      writers,
+      actors,
+      release: {
+        date,
+        releaseCountry,
+      },
+      runtime,
+      genre,
+      descriptions,
+    },
+    userDetails: {
+      personalRating,
+    },
+  } = card;
+  const { watchlist, alreadyWatched, favorite, emotion, currentCommentText } = option;
+  const formateDate = `${moment(date).format(`DD MMMM YYYY`)}`;
+  const duration = Common.getTimeInHoursAndMinutes(runtime);
+  const formatDuration = Common.getRuntimeInString(duration);
 
   return (
-    `<section id="${card.id}" class="film-details" style="animation: none">
+    `<section id="${id}" class="film-details" style="animation: none">
       <form class="film-details__inner" action="" method="get">
         <div class="form-details__top-container">
           <div class="film-details__close">
@@ -99,56 +100,56 @@ const createCardDetailsTemplate = (card, option = {}) => {
           </div>
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
-              <img class="film-details__poster-img" src="./images/posters/${card.poster}" alt="">
+              <img class="film-details__poster-img" src="./${poster}" alt="">
 
-              <p class="film-details__age">${card.ageLimit}</p>
+              <p class="film-details__age">${ageRating}</p>
             </div>
 
             <div class="film-details__info">
               <div class="film-details__info-head">
                 <div class="film-details__title-wrap">
-                  <h3 class="film-details__title">${card.title}</h3>
-                  <p class="film-details__title-original">Original: ${card.title}</p>
+                  <h3 class="film-details__title">${title}</h3>
+                  <p class="film-details__title-original">Original: ${title}</p>
                 </div>
 
                 <div class="film-details__rating">
-                  <p class="film-details__total-rating">${card.rating}</p>
-                  <p class="film-details__user-rating">Your rate ${Common.checksBoolean(history, card.yourRate)}</p>
+                  <p class="film-details__total-rating">${totalRating}</p>
+                  <p class="film-details__user-rating">Your rate ${Common.checksBoolean(alreadyWatched, personalRating)}</p>
                 </div>
               </div>
 
               <table class="film-details__table">
                 <tr class="film-details__row">
                   <td class="film-details__term">Director</td>
-                  <td class="film-details__cell">${card.director}</td>
+                  <td class="film-details__cell">${director}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Writers</td>
-                  <td class="film-details__cell">${card.writers}</td>
+                  <td class="film-details__cell">${writers}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Actors</td>
-                  <td class="film-details__cell">${card.actors}</td>
+                  <td class="film-details__cell">${actors}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">${date}</td>
+                  <td class="film-details__cell">${formateDate}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
-                  <td class="film-details__cell">${card.runtime}</td>
+                  <td class="film-details__cell">${formatDuration}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
-                  <td class="film-details__cell">${card.country}</td>
+                  <td class="film-details__cell">${releaseCountry}</td>
                 </tr>
                 <tr class="film-details__row">
-                  ${createGenresMarkup(card.genres)}
+                  ${createGenresMarkup(genre)}
                 </tr>
               </table>
 
               <p class="film-details__film-description">
-              ${card.descriptions}
+              ${descriptions}
               </p>
             </div>
           </div>
@@ -157,46 +158,45 @@ const createCardDetailsTemplate = (card, option = {}) => {
             <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${Common.checksBoolean(watchlist, `checked`)}>
             <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist" >Add to watchlist</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${Common.checksBoolean(history, `checked`)}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${Common.checksBoolean(alreadyWatched, `checked`)}>
             <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite"${Common.checksBoolean(favorites, `checked`)}>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite"${Common.checksBoolean(favorite, `checked`)}>
             <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
           </section>
         </div>
-        ${Common.checksBoolean(history, createUserRatingContainerMarkup(card.poster, card.title))}
+        ${Common.checksBoolean(alreadyWatched, createUserRatingContainerMarkup(poster, title))}
         <div class="form-details__bottom-container">
           <section class="film-details__comments-wrap">
             <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
             <ul class="film-details__comments-list">
-              ${createCommentsMarkup(comments)}
             </ul>
 
             <div class="film-details__new-comment">
-              <div for="add-emoji" class="film-details__add-emoji-label">${createImageEmojiMarkup(emojiSrc)}</div>
+              <div for="add-emoji" class="film-details__add-emoji-label">${createImageEmojiMarkup(emotion)}</div>
 
               <label class="film-details__comment-label">
                 <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${currentCommentText ? currentCommentText : ``}</textarea>
               </label>
 
               <div class="film-details__emoji-list">
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="sleeping">
+                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
                 <label class="film-details__emoji-label" for="emoji-smile">
                   <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
                 </label>
 
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="neutral-face">
+                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
                 <label class="film-details__emoji-label" for="emoji-sleeping">
                   <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
                 </label>
 
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-gpuke" value="grinning">
-                <label class="film-details__emoji-label" for="emoji-gpuke">
+                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
+                <label class="film-details__emoji-label" for="emoji-puke">
                   <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
                 </label>
 
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="grinning">
+                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
                 <label class="film-details__emoji-label" for="emoji-angry">
                   <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
                 </label>
@@ -213,32 +213,64 @@ export default class CardDetails extends AbstractSmartComponent {
   constructor(card) {
     super();
     this._card = card;
-    this._watchlist = this._card.watchlist;
-    this._history = this._card.history;
-    this._favorites = this._card.favorites;
-    this._emojiSrc = ``;
+    this._watchlist = this._card.userDetails.watchlist;
+    this._alreadyWatched = this._card.userDetails.alreadyWatched;
+    this._favorite = this._card.userDetails.favorite;
+    this._emotion = ``;
     this._currentCommentText = ``;
+    this._comments = [];
+
     this._hideCardDetailsHandler = null;
     this._deleteCommentButtonClickHandler = null;
     this._submitFormHandler = null;
 
     this._subscribeOnEvents();
-    this._disinfectsCommentText();
+    this.renderCommentsMarkup = this.renderCommentsMarkup.bind(this);
   }
 
   getTemplate() {
     return createCardDetailsTemplate(this._card, {
       watchlist: this._watchlist,
-      history: this._history,
-      favorites: this._favorites,
-      emojiSrc: this._emojiSrc,
+      alreadyWatched: this._alreadyWatched,
+      favorite: this._favorite,
+      emotion: this._emotion,
       currentCommentText: this._currentCommentText,
     });
   }
 
-  _disinfectsCommentText() {
-    this._card.comments.forEach((it) => {
-      it.text = he.encode(it.text);
+  renderCommentsMarkup(comments) {
+    this._comments = comments;
+
+    const commentsContainer = this.getElement().querySelector(`.film-details__comments-list`);
+    this._disinfectsCommentText(comments);
+
+    const commentsMarkup = comments.map((it) => {
+      const text = he.encode(it.comment);
+      const commentDate = moment(it.date).fromNow();
+      return (
+        `<li class="film-details__comment">
+          <span class="film-details__comment-emoji">
+            <img src="./images/emoji/${it.emotion ? it.emotion : `smile`}.png" width="55" height="55" alt="emoji">
+          </span>
+          <div>
+            <p class="film-details__comment-text">${text}</p>
+            <p class="film-details__comment-info">
+              <span class="film-details__comment-author">${it.author}</span>
+              <span class="film-details__comment-day">${commentDate}</span>
+              <button id="${it.id}" class="film-details__comment-delete">Delete</button>
+            </p>
+          </div>
+        </li>`
+      );
+    })
+      .join(`\n`);
+
+    commentsContainer.insertAdjacentHTML(`beforeend`, commentsMarkup);
+  }
+
+  _disinfectsCommentText(comments) {
+    comments.forEach((it) => {
+      it.comment = he.encode(it.comment);
     });
   }
 
@@ -273,20 +305,11 @@ export default class CardDetails extends AbstractSmartComponent {
     this._submitFormHandler = handler;
   }
 
-  _parseFormData(formData) {
-    return {
-      id: null,
-      urlEmoji: this._emojiSrc,
-      text: formData.get(`comment`),
-      author: null,
-      date: new Date(),
-    };
-  }
-
   _getData(form) {
     const formData = new FormData(form);
+    formData.emotion = this._emotion;
 
-    return this._parseFormData(formData);
+    return formData;
   }
 
   setDeleteCommentButtonClickHandler(handler) {
@@ -307,33 +330,37 @@ export default class CardDetails extends AbstractSmartComponent {
   _subscribeOnEvents() {
     const element = this.getElement();
 
-    element.querySelector(`#watchlist`)// в этом месте по id селектору не работает
+    element.querySelector(`.film-details__control-label--watchlist`)
       .addEventListener(`click`, () => {
         this._watchlist = !this._watchlist;
 
         this.reRender();
+        this.renderCommentsMarkup(this._comments);
       });
 
-    element.querySelector(`#watched`)
+    element.querySelector(`.film-details__control-label--watched`)
       .addEventListener(`click`, () => {
-        this._history = !this._history;
+        this._alreadyWatched = !this._alreadyWatched;
 
         this.reRender();
+        this.renderCommentsMarkup(this._comments);
       });
 
-    element.querySelector(`#favorite`)
+    element.querySelector(`.film-details__control-label--favorite`)
       .addEventListener(`click`, () => {
-        this._favorites = !this._favorites;
+        this._favorite = !this._favorite;
 
         this.reRender();
+        this.renderCommentsMarkup(this._comments);
       });
 
     element.querySelector(`.film-details__emoji-list`)
       .addEventListener(`click`, (evt) => {
-        if (evt.target.tagName === `IMG`) {
-          this._emojiSrc = evt.target.src;
+        if (evt.target.tagName === `INPUT`) {
+          this._emotion = evt.target.value;
 
           this.reRender();
+          this.renderCommentsMarkup(this._comments);
         }
       });
 
@@ -351,10 +378,10 @@ export default class CardDetails extends AbstractSmartComponent {
   }
 
   reset() {
-    this._watchlist = this._card.watchlist;
-    this._history = this._card.history;
-    this._favorites = this._card.favorites;
-    this._emojiSrc = ``;
+    this._watchlist = this._card.userDetails.watchlist;
+    this._alreadyWatched = this._card.userDetails.alreadyWatched;
+    this._favorite = this._card.userDetails.favorite;
+    this._emotion = ``;
     this._currentCommentText = ``;
 
     this.reRender();

@@ -5,60 +5,60 @@ const COLOR_BAR = `#ffe800`;
 
 export default class StatisticsUtils {
 
-  static getCardsByHistoryDateRange(cards, dateFrom, dateTo) {
+  static getCardsByWatchingDateRange(cards, dateFrom, dateTo) {
     if (dateFrom === undefined && dateTo === undefined) {
-      return cards.filter((card) => card.historyDate);
+      return cards.filter((card) => card.userDetails.watchingDate);
     }
 
     return cards.filter((card) => {
-      const historyDate = card.historyDate;
+      const watchingDate = new Date(card.userDetails.watchingDate).getTime();
 
-      return historyDate >= dateFrom && historyDate <= dateTo;
+      return watchingDate >= dateFrom && watchingDate <= dateTo;
     });
   }
 
-  static getGenresLabels(cards) {
-    let genresLabels = cards.map((card) => card.genres)
+  static getGenreLabels(cards) {
+    let genreLabels = cards.map((card) => card.cardInfo.genre)
       .reduce((acc, genres) => {
         return acc.concat(genres);
       }, []);
 
-    genresLabels = new Set(genresLabels);
+    genreLabels = new Set(genreLabels);
 
-    return genresLabels;
+    return genreLabels;
   }
 
-  static calcDataHistoryGenres(cards) {
-    const dataHistoryGenres = {};
-    const genresLabels = this.getGenresLabels(cards);
+  static calcDataGenre(cards) {
+    const dataGenre = {};
+    const genreLabels = this.getGenreLabels(cards);
 
-    genresLabels.forEach((it) => {
-      dataHistoryGenres[it] = {
+    genreLabels.forEach((it) => {
+      dataGenre[it] = {
         amount: 0,
         color: COLOR_BAR,
       };
     });
 
-    cards.forEach((card) => card.genres.forEach((genre) => dataHistoryGenres[genre].amount++));
+    cards.forEach((card) => card.cardInfo.genre.forEach((it) => dataGenre[it].amount++));
 
-    return dataHistoryGenres;
+    return dataGenre;
   }
 
   static renderStatsChart(statsCtx, cards, dateFrom, dateTo) {
-    const cardsHistory = (dateFrom) ? this.getCardsByHistoryDateRange(cards, dateFrom, dateTo)
-      : this.getCardsByHistoryDateRange(cards);
+    const cardsAlreadyWatched = (dateFrom) ? this.getCardsByWatchingDateRange(cards, dateFrom, dateTo)
+      : this.getCardsByWatchingDateRange(cards);
 
-    const genresHistory = this.calcDataHistoryGenres(cardsHistory);
-    const sortDataGenresHistory = Object.entries(genresHistory).sort((a, b) => b[1].amount - a[1].amount);
+    const genresAlreadyWatched = this.calcDataGenre(cardsAlreadyWatched);
+    const sortDataGenresAlreadyWatched = Object.entries(genresAlreadyWatched).sort((a, b) => b[1].amount - a[1].amount);
 
     return new Chart(statsCtx, {
       plugins: [ChartDataLabels],
       type: `horizontalBar`,
       data: {
-        labels: sortDataGenresHistory.map((it) => it[0]),
+        labels: sortDataGenresAlreadyWatched.map((it) => it[0]),
         datasets: [{
-          data: sortDataGenresHistory.map((it) => it[1].amount),
-          backgroundColor: sortDataGenresHistory.map((it) => it[1].color),
+          data: sortDataGenresAlreadyWatched.map((it) => it[1].amount),
+          backgroundColor: sortDataGenresAlreadyWatched.map((it) => it[1].color),
         }]
       },
       options: {
@@ -106,32 +106,22 @@ export default class StatisticsUtils {
   }
 
   static calcStatsDefaultData(cards) {
-    const cardsHistory = this.getCardsByHistoryDateRange(cards);
-    const genresHistory = this.calcDataHistoryGenres(cardsHistory);
-    const sortDataGenresHistory = Object.entries(genresHistory)
+    const cardsAlreadyWatched = this.getCardsByWatchingDateRange(cards);
+    const genresAlreadyWatched = this.calcDataGenre(cardsAlreadyWatched);
+    const sortDataGenresAlreadyWatched = Object.entries(genresAlreadyWatched)
       .sort((a, b) => b[1].amount - a[1].amount);
 
     const statsDefaultDate = {
-      history: cardsHistory.length,
-      topGenre: (sortDataGenresHistory.length > 0) ? sortDataGenresHistory[0][0] : `-`,
-      allTimeH: 0,
-      allTimeMin: 0,
+      alreadyWatched: cardsAlreadyWatched.length,
+      topGenre: (sortDataGenresAlreadyWatched.length > 0) ? sortDataGenresAlreadyWatched[0][0] : `-`,
+      allRuntime: 0,
     };
 
-    cardsHistory.reduce((acc, card) => {
-      if (card.runtime.includes(`h`)) {
-        acc.allTimeH += +card.runtime.split(`h`)[0];
-      }
-      acc.allTimeMin += +card.runtime.slice(-3, -1);
+    cardsAlreadyWatched.reduce((acc, card) => {
+      acc.allRuntime += card.cardInfo.runtime;
 
       return acc;
     }, statsDefaultDate);
-
-    const min = statsDefaultDate.allTimeMin % 60;
-    const h = (statsDefaultDate.allTimeMin - min) / 60;
-
-    statsDefaultDate.allTimeH += h;
-    statsDefaultDate.allTimeMin = min;
 
     return statsDefaultDate;
   }

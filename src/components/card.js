@@ -3,27 +3,54 @@ import Common from '../utils/common.js';
 import moment from 'moment';
 
 const CLASS_ACTIVE = `film-card__controls-item--active`;
+const MAX_LENGTH_DESCRIPTION = 140;
 
+const getThumbnailDescriptions = (description, maxLength) => {
+
+  return (description.length > maxLength) ? `${description.slice(0, maxLength - 1)}…` : description;
+};
 
 const createCardTemplate = (card) => {
-  const { title, rating, releaseDate, runtime, genres, poster, thumbnailDescription, comments, watchlist, history, favorites } = card;
+  const {
+    comments,
+    cardInfo: {
+      title,
+      totalRating,
+      poster,
+      release: {
+        date,
+      },
+      runtime,
+      genre,
+      description,
+    },
+    userDetails: {
+      watchlist,
+      alreadyWatched,
+      favorite,
+    },
+  } = card;
+
+  const duration = Common.getTimeInHoursAndMinutes(runtime);
+  const formatDuration = Common.getRuntimeInString(duration);
+  const thumbnailDescription = getThumbnailDescriptions(description, MAX_LENGTH_DESCRIPTION);
 
   return (
     `<article class="film-card">
       <h3 class="film-card__title">${title}</h3>
-      <p class="film-card__rating">${rating}</p>
+      <p class="film-card__rating">${totalRating}</p>
       <p class="film-card__info">
-        <span class="film-card__year">${moment(releaseDate).format(`YYYY`)}</span>
-        <span class="film-card__duration">${runtime}</span>
-        <span class="film-card__genre">${genres[0]}</span>
+        <span class="film-card__year">${moment(date).format(`YYYY`)}</span>
+        <span class="film-card__duration">${formatDuration}</span>
+        <span class="film-card__genre">${genre[0]}</span>
       </p>
-      <img src="./images/posters/${poster}" alt="" class="film-card__poster">
+      <img src="./${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${thumbnailDescription}</p>
       <a class="film-card__comments">${comments.length} comments</a>
       <form class="film-card__controls">
         <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${Common.checksBoolean(watchlist, CLASS_ACTIVE)}">Add to watchlist</button>
-        <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${Common.checksBoolean(history, CLASS_ACTIVE)}">Mark as watched</button>
-        <button class="film-card__controls-item button film-card__controls-item--favorite ${Common.checksBoolean(favorites, CLASS_ACTIVE)}">Mark as favorite</button>
+        <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${Common.checksBoolean(alreadyWatched, CLASS_ACTIVE)}">Mark as watched</button>
+        <button class="film-card__controls-item button film-card__controls-item--favorite ${Common.checksBoolean(favorite, CLASS_ACTIVE)}">Mark as favorite</button>
       </form>
     </article>`
   );

@@ -1,25 +1,8 @@
-import { TimeShiftInMin } from '../const.js';
+import { MINUTES_IN_HOUR } from '../const.js';
 
 export default class Common {
-  static getRandomNumberFromPeriod(max, min = 0) {
-    return min + Math.floor((max - min) * Math.random());
-  }
-
-  static getRandomBoolean() {
-    return Math.random() > 0.5;
-  }
-
   static checksBoolean(test, positiveResult) {
     return test ? positiveResult : ``;
-  }
-
-  static getRandomDate(shiftInMin = TimeShiftInMin.YEAR * 20, sign = -1) {
-    const currentDate = new Date();
-    const diffValue = sign * this.getRandomNumberFromPeriod(shiftInMin);
-
-    currentDate.setMinutes(currentDate.getMinutes() + diffValue);
-
-    return currentDate;
   }
 
   static calcUserRank(amountWatched, minValRank, middleJrValRank, middleValRank, maxValRank) {
@@ -32,6 +15,25 @@ export default class Common {
       rank = `movie buff`;
     }
     return rank;
+  }
+
+  static getTimeInHoursAndMinutes(timeInMin) {
+    const runtime = {
+      hours: ``,
+      minutes: ``,
+    };
+    if (timeInMin < MINUTES_IN_HOUR) {
+      runtime.minute = (timeInMin < 10) ? `0${timeInMin}` : timeInMin;
+      return runtime;
+    }
+    runtime.minutes = timeInMin % MINUTES_IN_HOUR;
+    runtime.hours = (timeInMin - runtime.minutes) / MINUTES_IN_HOUR;
+
+    return runtime;
+  }
+
+  static getRuntimeInString(time) {
+    return (time.hours) ? `${time.hours}h ${time.minutes}m` : `${time.minutes}m`;
   }
 }
 

@@ -2,26 +2,26 @@ import { FilterType } from '../const.js';
 
 export default class Filter {
   static calcFilterValues(cards, property) {
-    const [, watchlist, history, favorites] = property;
+    const [, watchlist, alreadyWatched, favorite] = property;
     return cards.reduce((sum, card) => {
-      sum[watchlist] = (card[watchlist]) ? ++sum[watchlist] : sum[watchlist];
-      sum[history] = (card[history]) ? ++sum[history] : sum[history];
-      sum[favorites] = (card[favorites]) ? ++sum[favorites] : sum[favorites];
+      sum[watchlist] = (card.userDetails[watchlist]) ? ++sum[watchlist] : sum[watchlist];
+      sum[alreadyWatched] = (card.userDetails[alreadyWatched]) ? ++sum[alreadyWatched] : sum[alreadyWatched];
+      sum[favorite] = (card.userDetails[favorite]) ? ++sum[favorite] : sum[favorite];
 
       return sum;
-    }, { [watchlist]: 0, [history]: 0, [favorites]: 0 });
+    }, { [watchlist]: 0, [alreadyWatched]: 0, [favorite]: 0 });
   }
 
   static getWatchlistCards(cards) {
-    return cards.filter((card) => card.watchlist);
+    return cards.filter((card) => card.userDetails.watchlist);
   }
 
-  static getHistoryCards(cards) {
-    return cards.filter((card) => card.history);
+  static getAlreadyWatchedCards(cards) {
+    return cards.filter((card) => card.userDetails.alreadyWatched);
   }
 
   static getFavoriteCards(cards) {
-    return cards.filter((card) => card.favorites);
+    return cards.filter((card) => card.userDetails.favorite);
   }
 
   static getCardsByFilter(cards, filterType) {
@@ -30,9 +30,9 @@ export default class Filter {
         return cards;
       case FilterType.WATCHLIST:
         return this.getWatchlistCards(cards);
-      case FilterType.HISTORY:
-        return this.getHistoryCards(cards);
-      case FilterType.FAVORITES:
+      case FilterType.ALREADY_WATCHED:
+        return this.getAlreadyWatchedCards(cards);
+      case FilterType.FAVORITE:
         return this.getFavoriteCards(cards);
     }
     return cards;

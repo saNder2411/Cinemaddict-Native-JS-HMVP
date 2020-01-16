@@ -1,17 +1,19 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
 import StatsUtils from '../utils/statistics.js';
+import Common from '../utils/common.js';
 
 const DateById = {
   'statistic-all-time': null,
-  'statistic-today': new Date(new Date().setHours(0, 0, 0)),
-  'statistic-week': new Date(new Date().setDate(new Date().getDate() - 7)),
-  'statistic-month': new Date(new Date().setMonth(new Date().getMonth() - 1)),
-  'statistic-year': new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
+  'statistic-today': new Date().setHours(0, 0, 0),
+  'statistic-week': new Date().setDate(new Date().getDate() - 7),
+  'statistic-month': new Date().setMonth(new Date().getMonth() - 1),
+  'statistic-year': new Date().setFullYear(new Date().getFullYear() - 1),
 };
 
 const createStatsTemplate = (option = {}) => {
   const { cards, rank } = option;
-  const { history, topGenre, allTimeH, allTimeMin } = StatsUtils.calcStatsDefaultData(cards);
+  const { alreadyWatched, topGenre, allRuntime } = StatsUtils.calcStatsDefaultData(cards);
+  const allDuration = Common.getTimeInHoursAndMinutes(allRuntime);
 
   return (
     `<section class="statistic">
@@ -43,11 +45,11 @@ const createStatsTemplate = (option = {}) => {
       <ul class="statistic__text-list">
         <li class="statistic__text-item">
           <h4 class="statistic__item-title">You watched</h4>
-          <p class="statistic__item-text">${history} <span class="statistic__item-description">movies</span></p>
+          <p class="statistic__item-text">${alreadyWatched} <span class="statistic__item-description">movies</span></p>
         </li>
         <li class="statistic__text-item">
           <h4 class="statistic__item-title">Total duration</h4>
-<p class="statistic__item-text">${allTimeH}<span class="statistic__item-description">h</span>${allTimeMin}<span class="statistic__item-description">m</span></p>
+<p class="statistic__item-text">${allDuration.hours}<span class="statistic__item-description">h</span>${allDuration.minutes}<span class="statistic__item-description">m</span></p>
         </li>
         <li class="statistic__text-item">
           <h4 class="statistic__item-title">Top genre</h4>
