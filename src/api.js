@@ -60,11 +60,29 @@ export default class API {
       .then(CardModel.parseCard);
   }
 
-  createComment() {
+  addComment(cardId, newCommentData) {
+    return this._load({
+      url: `comments/${cardId}`,
+      method: Method.POST,
+      headers: new Headers({ 'Content-Type': `application/json` }),
+      body: JSON.stringify(newCommentData),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        const card = CardModel.parseCard(result.movie);
+        const comments = CommentModel.parseComments(result.comments);
 
+        return {
+          card,
+          comments,
+        };
+      });
   }
 
-  deleteComment() {
-
+  deleteComment(commentId) {
+    return this._load({
+      url: `comments/${commentId}`,
+      method: Method.DELETE,
+    });
   }
 }

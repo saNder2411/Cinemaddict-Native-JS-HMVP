@@ -1,24 +1,28 @@
 import Render from '../utils/render.js';
 import SortComponent from '../components/sort.js';
 import NoCardsComponent from '../components/no-cards.js';
+import LoadingCardsComponent from '../components/loading-cards.js';
 import CardsContainerComponent from '../components/cards-container.js';
 import ShowMoreButtonComponent from '../components/show-more-button.js';
 import CardController from './card.js';
-import {
-  EXTRA_AMOUNT_CARDS, SHOWING_CARDS_AMOUNT_ON_START,
-  SHOWING_CARDS_AMOUNT_BY_BUTTON, SortType, Mode
-} from '../const.js';
+import { SortType, ModeView, ModeRequest } from '../const.js';
 
-const renderCards = (cardsContainer, cards, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, api) => {
+const ShowingCardsAmount = {
+  ON_START: 5,
+  BY_BUTTON: 5,
+  EXTRA_CARDS: 2,
+};
+
+const renderCards = (cardsContainer, cards, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, onUserDetailsDataChange, api) => {
   return cards.map((card) => {
-    const cardController = new CardController(cardsContainer, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, api);
-    cardController.render(card, Mode.DEFAULT);
+    const cardController = new CardController(cardsContainer, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, onUserDetailsDataChange, api);
+    cardController.render(card, ModeView.DEFAULT);
 
     return cardController;
   });
 };
 
-const renderExtraCards = (container, cards, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, sortProp, api) => {
+const renderExtraCards = (container, cards, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, onUserDetailsDataChange, sortProp, api) => {
   return cards
     .slice()
     .sort((a, b) => {
@@ -27,13 +31,13 @@ const renderExtraCards = (container, cards, onDataChange, onViewChange, onCommen
       }
       return b.cardInfo[sortProp] - a.cardInfo[sortProp];
     })
-    .slice(0, EXTRA_AMOUNT_CARDS)
+    .slice(0, ShowingCardsAmount.EXTRA_CARDS)
     .map((card) => {
-      const cardController = new CardController(container, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, api);
+      const cardController = new CardController(container, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, onUserDetailsDataChange, api);
       const sortPropValue = card[sortProp] instanceof Array ? card[sortProp].length : card.cardInfo[sortProp];
 
       if (sortPropValue > 0) {
-        cardController.render(card, Mode.DEFAULT);
+        cardController.render(card, ModeView.DEFAULT);
       }
 
       return cardController;
@@ -49,9 +53,10 @@ export default class PageController {
 
     this._showedCardControllers = [];
     this._showedExtraCardControllers = [];
-    this._showingCardsAmount = SHOWING_CARDS_AMOUNT_ON_START;
+    this._showingCardsAmount = ShowingCardsAmount.ON_START;
     this._sortComponent = new SortComponent();
     this._noCardsComponent = new NoCardsComponent();
+    this._loadingCardsComponent = new LoadingCardsComponent();
     this._cardsContainerComponent = new CardsContainerComponent();
     this._mainCardsContainer = this._cardsContainerComponent.mainCardsContainer;
     this._topRatedCardsContainer = this._cardsContainerComponent.topRatedCardsContainer;
@@ -62,6 +67,7 @@ export default class PageController {
     this._onViewChange = this._onViewChange.bind(this);
     this._onCommentDataDelete = this._onCommentDataDelete.bind(this);
     this._onCommentDataAdd = this._onCommentDataAdd.bind(this);
+    this._onUserDetailsDataChange = this._onUserDetailsDataChange.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._onShowMoreButtonClick = this._onShowMoreButtonClick.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
@@ -80,17 +86,22 @@ export default class PageController {
     this._cardsContainerComponent.hide();
   }
 
+  renderLoadingMassage() {
+    Render.renderMarkup(this._container, this._sortComponent);
+    Render.renderMarkup(this._container, this._loadingCardsComponent);
+  }
+
   render() {
     const cards = this._cardsModel.getCards();
     const allCards = this._cardsModel.getCardsAll();
     const isCards = cards.length > 0;
+    Render.remove(this._loadingCardsComponent);
 
     if (!isCards) {
       Render.renderMarkup(this._container, this._noCardsComponent);
       return;
     }
 
-    Render.renderMarkup(this._container, this._sortComponent);
     Render.renderMarkup(this._container, this._cardsContainerComponent);
 
     this._renderCards(cards.slice(0, this._showingCardsAmount));
@@ -100,14 +111,14 @@ export default class PageController {
   }
 
   _renderCards(cards) {
-    const newCards = renderCards(this._mainCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, this._api);
+    const newCards = renderCards(this._mainCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, this._onUserDetailsDataChange, this._api);
     this._showedCardControllers = this._showedCardControllers.concat(newCards);
     this._showingCardsAmount = this._showedCardControllers.length;
   }
 
   _renderExtraCards(cards) {
-    const newExtraCardsRating = renderExtraCards(this._topRatedCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, `totalRating`, this._api);
-    const newExtraCardsComment = renderExtraCards(this._mostCommentedCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, `comments`, this._api);
+    const newExtraCardsRating = renderExtraCards(this._topRatedCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, this._onUserDetailsDataChange, `totalRating`, this._api);
+    const newExtraCardsComment = renderExtraCards(this._mostCommentedCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, this._onUserDetailsDataChange, `comments`, this._api);
     this._showedExtraCardControllers = this._showedExtraCardControllers.concat(newExtraCardsRating, newExtraCardsComment);
   }
 
@@ -135,7 +146,7 @@ export default class PageController {
     const prevCardsAmount = this._showingCardsAmount;
     const cards = this._cardsModel.getCards();
 
-    this._showingCardsAmount += SHOWING_CARDS_AMOUNT_BY_BUTTON;
+    this._showingCardsAmount += ShowingCardsAmount.BY_BUTTON;
 
     this._renderCards(cards.slice(prevCardsAmount, this._showingCardsAmount));
 
@@ -152,42 +163,91 @@ export default class PageController {
   }
 
   _isSuccessDataChange(cardController, card, newDataCard) {
-    if (newDataCard) {
-      this._api.updateCard(card.id, newDataCard)
-        .then((cardModel) => {
-          const isSuccess = this._cardsModel.updateCard(card.id, cardModel);
-
-          if (isSuccess) {
-            cardController.render(cardModel, Mode.DEFAULT);
-            this._updateCards(this._showingCardsAmount);
-          }
-        });
-
-      return;
-    }
-
-    const isSuccess = this._cardsModel.updateCard(card.id, card);
+    const isSuccess = this._cardsModel.updateCard(card.id, newDataCard);
 
     if (isSuccess) {
-      cardController.render(card, Mode.ADDING);
       this._updateCards(this._showingCardsAmount);
+      cardController.render(newDataCard, ModeView.DEFAULT);
     }
   }
 
   _onDataChange(cardController, card, newDataCard) {
-    this._isSuccessDataChange(cardController, card, newDataCard);
+    this._api.updateCard(card.id, newDataCard)
+      .then((cardModel) => {
+        this._isSuccessDataChange(cardController, card, cardModel);
+      })
+      .catch(() => {
+        cardController.shake();
+      });
   }
 
-  _onCommentDataDelete(cardController, card, commentId) {
-    if (card.comments.findIndex((it) => it.id === commentId) !== -1) {
-      this._cardsModel.removeComment(card, commentId);
-      this._isSuccessDataChange(cardController, card, undefined);
+  _isSuccessCommentDataAdd(cardController, oldDataCard, newDataCard, newComments) {
+    const isSuccessCardDataChange = this._cardsModel.updateCard(oldDataCard.id, newDataCard);
+
+    if (isSuccessCardDataChange) {
+      this._updateCards(this._showingCardsAmount);
+      cardController.render(newDataCard, ModeView.DETAILS);
+      cardController.renderUpdatedComments(newComments);
     }
   }
 
-  _onCommentDataAdd(cardController, card, newCommentData) {
-    this._cardsModel.addComment(card, newCommentData);
-    this._isSuccessDataChange(cardController, card, undefined);
+  _onCommentDataAdd(cardController, oldDataCard, newCommentData) {
+    this._api.addComment(oldDataCard.id, newCommentData)
+      .then((result) => {
+        this._isSuccessCommentDataAdd(cardController, oldDataCard, result.card, result.comments);
+      })
+      .catch(() => {
+        this._isErrorDataChange(cardController, oldDataCard, ModeRequest.isCommentAdd);
+      });
+  }
+
+  _isSuccessCommentDataDelete(cardController, card, commentId) {
+    const isSuccessCommentDataDelete = this._cardsModel.removeComment(card, commentId);
+
+    if (isSuccessCommentDataDelete) {
+      const newListComments = cardController.deleteComment(commentId);
+      this._updateCards(this._showingCardsAmount);
+      cardController.render(card, ModeView.DETAILS);
+      cardController.renderUpdatedComments(newListComments);
+    }
+  }
+
+  _onCommentDataDelete(cardController, card, commentId) {
+    this._api.deleteComment(commentId)
+      .then(() => {
+        this._isSuccessCommentDataDelete(cardController, card, commentId);
+      })
+      .catch(() => {
+        this._isErrorDataChange(cardController, card);
+      });
+  }
+
+  _isSuccessUserRatingDataChange(cardController, card, newDataCard) {
+    const isSuccess = this._cardsModel.updateCard(card.id, newDataCard);
+
+    if (isSuccess) {
+      this._updateCards(this._showingCardsAmount);
+      const newListComments = cardController.deleteComment();
+      cardController.render(newDataCard, ModeView.DETAILS);
+      cardController.renderUpdatedComments(newListComments);
+    }
+  }
+
+  _onUserDetailsDataChange(cardController, oldDataCard, newDataCard, userRatingId) {
+    this._api.updateCard(oldDataCard.id, newDataCard)
+      .then((cardModel) => {
+        this._isSuccessUserRatingDataChange(cardController, oldDataCard, cardModel);
+      })
+      .catch(() => {
+        this._isErrorDataChange(cardController, oldDataCard, ModeRequest.isUserDetailsChange, userRatingId);
+      });
+  }
+
+  _isErrorDataChange(cardController, card, modeRequest = ``, userRatingId = ``) {
+    const newListComments = cardController.deleteComment();
+    cardController.render(card, ModeView.DETAILS);
+    cardController.renderUpdatedComments(newListComments);
+    cardController.shake(modeRequest, userRatingId);
   }
 
   _onViewChange() {
@@ -219,9 +279,10 @@ export default class PageController {
     } else {
       Render.remove(this._showMoreButtonComponent);
     }
+
   }
 
   _onFilterChange() {
-    this._updateCards(SHOWING_CARDS_AMOUNT_ON_START);
+    this._updateCards(ShowingCardsAmount.ON_START);
   }
 }

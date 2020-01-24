@@ -29,7 +29,7 @@ export default class Cards {
   }
 
   removeComment(card, idDeletedComment) {
-    const indexDeleted = card.comments.findIndex((it) => it.id === idDeletedComment);
+    const indexDeleted = card.comments.findIndex((it) => it === idDeletedComment);
 
     if (indexDeleted === -1) {
       return false;
@@ -41,12 +41,6 @@ export default class Cards {
     this._callHandlers(this._dataChangeHandlers);
 
     return true;
-  }
-
-  addComment(card, newCommentData) {
-    newCommentData.id = new Date().getTime();
-    card.comments = [].concat(newCommentData, card.comments);
-    this._callHandlers(this._dataChangeHandlers);
   }
 
   updateCard(id, card) {

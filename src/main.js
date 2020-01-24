@@ -7,8 +7,12 @@ import CardsModel from './models/cards.js';
 import Render from './utils/render.js';
 import Filter from './utils/filter.js';
 import Common from './utils/common.js';
-import { ValuesForUserRank, FilterType, END_POINT, AUTHORIZATION } from './const.js';
+import { FilterType } from './const.js';
 
+const AUTHORIZATION = `Basic er883jdzbdf`;
+const END_POINT = `https://htmlacademy-es-10.appspot.com/cinemaddict`;
+
+const ValuesForUserRank = [1, 10, 11, 20];
 
 const dateTo = new Date();
 const dateFrom = null;
@@ -20,25 +24,27 @@ const siteHeader = document.querySelector(`.header`);
 const siteMain = document.querySelector(`.main`);
 const footerStatistic = document.querySelector(`.footer__statistics p`);
 
+const filterController = new FilterController(siteMain, cardsModel);
+const pageController = new PageController(siteMain, cardsModel, api);
+
+filterController.render();
+pageController.renderLoadingMassage();
+
 api.getCards()
   .then((cards) => {
     cardsModel.setCards(cards);
 
-
     const filterValues = Filter.calcFilterValues(cardsModel.getCardsAll(), Object.values(FilterType));
     const userRank = Common.calcUserRank(filterValues.alreadyWatched, ...ValuesForUserRank);
-
-    const filterController = new FilterController(siteMain, cardsModel);
-    const pageController = new PageController(siteMain, cardsModel, api);
     const statsComponent = new StatisticsComponent(cardsModel.getCardsAll(), dateFrom, dateTo, userRank);
 
     Render.renderMarkup(siteHeader, new UserRankComponent(userRank));
-    filterController.render();
     pageController.render();
     Render.renderMarkup(siteMain, statsComponent);
     statsComponent.hide();
 
     const filterComponent = filterController.getFilterComponent();
+
     filterComponent.setFilterClickHandler((filterType) => {
       if (filterType === FilterType.STATISTICS) {
         pageController.hide();
