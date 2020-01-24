@@ -1,4 +1,4 @@
-import { MINUTES_IN_HOUR } from '../const.js';
+const MINUTES_IN_HOUR = 60;
 
 export default class Common {
   static checksBoolean(test, positiveResult) {

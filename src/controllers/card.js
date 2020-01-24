@@ -2,18 +2,27 @@ import CardComponent from '../components/card.js';
 import CardDetailsComponent from '../components/card-details.js';
 import CardModel from '../models/card.js';
 import Render from '../utils/render';
-import { InteractiveElementsCard, Mode } from '../const.js';
+import { ModeView, ModeRequest } from '../const.js';
+
+const SHAKE_ANIMATION_TIMEOUT = 0.6;
+
+const InteractiveElementsCard = {
+  'film-card__poster': true,
+  'film-card__title': true,
+  'film-card__comments': true,
+};
 
 export default class CardController {
-  constructor(container, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, api) {
+  constructor(container, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, onUserDetailsDataChange, api) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
     this._onCommentDataDelete = onCommentDataDelete;
     this._onCommentDataAdd = onCommentDataAdd;
+    this._onUserDetailsDataChange = onUserDetailsDataChange;
     this._api = api;
 
-    this._mode = Mode.DEFAULT;
+    this._mode = ModeView.DEFAULT;
     this._cardId = null;
 
     this._cardComponent = null;
@@ -38,6 +47,7 @@ export default class CardController {
     this._cardComponent.setWatchlistButtonClickHandler(() => {
       const newCard = CardModel.clone(card);
       newCard.userDetails.watchlist = !newCard.userDetails.watchlist;
+      newCard.userDetails.watchingDate = new Date().toISOString();
 
       this._onDataChange(this, card, newCard);
     });
@@ -45,6 +55,7 @@ export default class CardController {
     this._cardComponent.setWatchedButtonClickHandler(() => {
       const newCard = CardModel.clone(card);
       newCard.userDetails.alreadyWatched = !newCard.userDetails.alreadyWatched;
+      newCard.userDetails.watchingDate = new Date().toISOString();
 
       this._onDataChange(this, card, newCard);
     });
@@ -52,22 +63,36 @@ export default class CardController {
     this._cardComponent.setFavoriteButtonClickHandler(() => {
       const newCard = CardModel.clone(card);
       newCard.userDetails.favorite = !newCard.userDetails.favorite;
+      newCard.userDetails.watchingDate = new Date().toISOString();
 
       this._onDataChange(this, card, newCard);
     });
 
     this._cardDetailsComponent.setHideCardDetailsClickHandler(this._hideCardDetailsOnClick);
 
-    this._cardDetailsComponent.setDeleteCommentButtonClickHandler((commentId) => {
-      this._onCommentDataDelete(this, card, commentId);
-    });
+    this._cardDetailsComponent.setSubmitFormHandler((formDataComment) => {
+      const newCommentData = this._parseFormCommentData(formDataComment);
+      this._cardDetailsComponent.setData({ request: true });
 
-    this._cardDetailsComponent.setSubmitFormHandler((newCommentData) => {
       this._onCommentDataAdd(this, card, newCommentData);
     });
 
+    this._cardDetailsComponent.setDeleteCommentButtonClickHandler((commentId) => {
+      this._cardDetailsComponent.setData({ deleteCommentId: commentId });
+
+      this._onCommentDataDelete(this, card, commentId);
+    });
+
+    this._cardDetailsComponent.setUserDetailsClickHandler((userDetailsData, userRatingId) => {
+      const newCard = CardModel.clone(card);
+      newCard.userDetails = Object.assign({}, newCard.userDetails, userDetailsData);
+      this._cardDetailsComponent.setData({ request: true });
+
+      this._onUserDetailsDataChange(this, card, newCard, userRatingId);
+    });
+
     switch (mode) {
-      case Mode.DEFAULT:
+      case ModeView.DEFAULT:
         if (oldCardComponent && oldCardDetailsComponent) {
           Render.replace(oldCardComponent, this._cardComponent);
           Render.replace(oldCardDetailsComponent, this._cardDetailsComponent);
@@ -76,7 +101,7 @@ export default class CardController {
           Render.renderMarkup(this._container, this._cardComponent);
         }
         break;
-      case Mode.ADDING:
+      case ModeView.DETAILS:
         if (oldCardComponent && oldCardDetailsComponent) {
           Render.replace(oldCardComponent, this._cardComponent);
           Render.replace(oldCardDetailsComponent, this._cardDetailsComponent);
@@ -87,12 +112,10 @@ export default class CardController {
     }
   }
 
-  _parseFormData(formData) {
+  _parseFormCommentData(formData) {
     return {
-      'id': null,
-      'author': null,
       'comment': formData.get(`comment`),
-      'date': new Date(),
+      'date': new Date().toISOString(),
       'emotion': formData.emotion,
     };
   }
@@ -101,6 +124,19 @@ export default class CardController {
     Render.remove(this._cardComponent);
     Render.remove(this._cardDetailsComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
+  }
+
+  _loadsAndRenderCommentsOnClick() {
+    this._api.getComments(this._cardId)
+      .then(this._cardDetailsComponent.renderCommentsMarkup);
+  }
+
+  renderUpdatedComments(comments) {
+    this._cardDetailsComponent.renderCommentsMarkup(comments);
+  }
+
+  deleteComment(commentId) {
+    return this._cardDetailsComponent.removeComment(commentId);
   }
 
   _onEscKeyDown(evt) {
@@ -116,29 +152,47 @@ export default class CardController {
 
     if (InteractiveElementsCard[evt.target.className]) {
       this._onViewChange();
-      this._mode = Mode.DETAILS;
+      this._mode = ModeView.DETAILS;
       Render.renderMarkup(document.body.lastElementChild, this._cardDetailsComponent, Render.renderPosition().BEFOREBEGIN);
       document.addEventListener(`keydown`, this._onEscKeyDown);
 
-      this._renderComments();
+      this._loadsAndRenderCommentsOnClick();
     }
-  }
-
-  _renderComments() {
-    this._api.getComments(this._cardId)
-      .then(this._cardDetailsComponent.renderCommentsMarkup);
   }
 
   _hideCardDetailsOnClick() {
     this._cardDetailsComponent.reset();
     this._cardDetailsComponent.getElement().remove();
-    this._mode = Mode.DEFAULT;
+    this._mode = ModeView.DEFAULT;
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   setDefaultView() {
-    if (this._mode !== Mode.DEFAULT) {
+    if (this._mode !== ModeView.DEFAULT) {
       this._hideCardDetailsOnClick();
     }
+  }
+
+  shake(modeRequest = false, userRatingId = false) {
+    this._cardDetailsComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT}s`;
+    this._cardComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT}s`;
+
+    const isCommentAdd = modeRequest === ModeRequest.isCommentAdd ? true : false;
+    const isUserDetailsChange = modeRequest === ModeRequest.isUserDetailsChange ? true : false;
+
+    const externalData = {
+      deleteCommentId: ``,
+      userRatingId: isUserDetailsChange ? userRatingId : ``,
+      request: false,
+      errorCommentAddResponse: isCommentAdd,
+      errorUserDetailsChangeResponse: isUserDetailsChange,
+    };
+
+    setTimeout(() => {
+      this._cardDetailsComponent.getElement().style.animation = ``;
+      this._cardComponent.getElement().style.animation = ``;
+
+      this._cardDetailsComponent.setData(externalData);
+    }, SHAKE_ANIMATION_TIMEOUT * 1000);
   }
 }
