@@ -4,7 +4,6 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 const COLOR_BAR = `#ffe800`;
 
 export default class StatisticsUtils {
-
   static getCardsByWatchingDateRange(cards, dateFrom, dateTo) {
     if (dateFrom === undefined && dateTo === undefined) {
       return cards.filter((card) => card.userDetails.watchingDate);

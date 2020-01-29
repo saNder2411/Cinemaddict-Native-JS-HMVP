@@ -36,16 +36,18 @@ export default class CardController {
   render(card, mode) {
     const oldCardComponent = this._cardComponent;
     const oldCardDetailsComponent = this._cardDetailsComponent;
+
     this._mode = mode;
     this._cardId = card.id;
-
     this._cardComponent = new CardComponent(card);
     this._cardDetailsComponent = new CardDetailsComponent(card);
+
 
     this._cardComponent.setElementsClickHandler(this._showCardDetailsOnClick);
 
     this._cardComponent.setWatchlistButtonClickHandler(() => {
       const newCard = CardModel.clone(card);
+
       newCard.userDetails.watchlist = !newCard.userDetails.watchlist;
       newCard.userDetails.watchingDate = new Date().toISOString();
 
@@ -54,6 +56,7 @@ export default class CardController {
 
     this._cardComponent.setWatchedButtonClickHandler(() => {
       const newCard = CardModel.clone(card);
+
       newCard.userDetails.alreadyWatched = !newCard.userDetails.alreadyWatched;
       newCard.userDetails.watchingDate = new Date().toISOString();
 
@@ -62,16 +65,19 @@ export default class CardController {
 
     this._cardComponent.setFavoriteButtonClickHandler(() => {
       const newCard = CardModel.clone(card);
+
       newCard.userDetails.favorite = !newCard.userDetails.favorite;
       newCard.userDetails.watchingDate = new Date().toISOString();
 
       this._onDataChange(this, card, newCard);
     });
 
+
     this._cardDetailsComponent.setHideCardDetailsClickHandler(this._hideCardDetailsOnClick);
 
     this._cardDetailsComponent.setSubmitFormHandler((formDataComment) => {
       const newCommentData = this._parseFormCommentData(formDataComment);
+
       this._cardDetailsComponent.setData({ request: true });
 
       this._onCommentDataAdd(this, card, newCommentData);
@@ -85,6 +91,7 @@ export default class CardController {
 
     this._cardDetailsComponent.setUserDetailsClickHandler((userDetailsData, userRatingId) => {
       const newCard = CardModel.clone(card);
+
       newCard.userDetails = Object.assign({}, newCard.userDetails, userDetailsData);
       this._cardDetailsComponent.setData({ request: true });
 
@@ -153,6 +160,7 @@ export default class CardController {
     if (InteractiveElementsCard[evt.target.className]) {
       this._onViewChange();
       this._mode = ModeView.DETAILS;
+
       Render.renderMarkup(document.body.lastElementChild, this._cardDetailsComponent, Render.renderPosition().BEFOREBEGIN);
       document.addEventListener(`keydown`, this._onEscKeyDown);
 
@@ -164,6 +172,7 @@ export default class CardController {
     this._cardDetailsComponent.reset();
     this._cardDetailsComponent.getElement().remove();
     this._mode = ModeView.DEFAULT;
+
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
@@ -174,12 +183,8 @@ export default class CardController {
   }
 
   shake(modeRequest = false, userRatingId = false) {
-    this._cardDetailsComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT}s`;
-    this._cardComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT}s`;
-
     const isCommentAdd = modeRequest === ModeRequest.isCommentAdd ? true : false;
     const isUserDetailsChange = modeRequest === ModeRequest.isUserDetailsChange ? true : false;
-
     const externalData = {
       deleteCommentId: ``,
       userRatingId: isUserDetailsChange ? userRatingId : ``,
@@ -188,11 +193,13 @@ export default class CardController {
       errorUserDetailsChangeResponse: isUserDetailsChange,
     };
 
-    setTimeout(() => {
-      this._cardDetailsComponent.getElement().style.animation = ``;
-      this._cardComponent.getElement().style.animation = ``;
+    this._cardDetailsComponent.setData(externalData);
+    this._cardDetailsComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT}s`;
+    this._cardComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT}s`;
 
-      this._cardDetailsComponent.setData(externalData);
+    setTimeout(() => {
+      this._cardDetailsComponent.getElement().style.animation = `none`;
+      this._cardComponent.getElement().style.animation = ``;
     }, SHAKE_ANIMATION_TIMEOUT * 1000);
   }
 }

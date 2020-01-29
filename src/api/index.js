@@ -1,5 +1,5 @@
-import CardModel from './models/card.js';
-import CommentModel from './models/comment.js';
+import CardModel from '../models/card.js';
+import CommentModel from '../models/comment.js';
 
 const Method = {
   GET: `GET`,

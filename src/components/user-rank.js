@@ -1,8 +1,6 @@
 import AbstractComponent from './abstract-component.js';
 
 const createUserRankTemplate = (rank) => {
-
-
   return (
     `<section class="header__profile profile">
       <p class="profile__rating">${rank}</p>

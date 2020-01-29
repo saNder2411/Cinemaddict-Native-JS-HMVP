@@ -1,12 +1,9 @@
 const MINUTES_IN_HOUR = 60;
 
 export default class Common {
-  static checksBoolean(test, positiveResult) {
-    return test ? positiveResult : ``;
-  }
-
   static calcUserRank(amountWatched, minValRank, middleJrValRank, middleValRank, maxValRank) {
     let rank = ``;
+
     if (amountWatched >= minValRank && amountWatched <= middleJrValRank) {
       rank = `novice`;
     } else if (amountWatched >= middleValRank && amountWatched <= maxValRank) {
@@ -14,6 +11,7 @@ export default class Common {
     } else if (amountWatched > maxValRank) {
       rank = `movie buff`;
     }
+
     return rank;
   }
 
@@ -22,10 +20,12 @@ export default class Common {
       hours: ``,
       minutes: ``,
     };
+
     if (timeInMin < MINUTES_IN_HOUR) {
       runtime.minute = (timeInMin < 10) ? `0${timeInMin}` : timeInMin;
       return runtime;
     }
+
     runtime.minutes = timeInMin % MINUTES_IN_HOUR;
     runtime.hours = (timeInMin - runtime.minutes) / MINUTES_IN_HOUR;
 

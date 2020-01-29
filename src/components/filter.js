@@ -40,4 +40,8 @@ export default class Filter extends AbstractComponent {
       }
     });
   }
+
+  setStatsClickHandler(handler) {
+    this.setFilterClickHandler(handler);
+  }
 }

@@ -16,6 +16,7 @@ const ShowingCardsAmount = {
 const renderCards = (cardsContainer, cards, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, onUserDetailsDataChange, api) => {
   return cards.map((card) => {
     const cardController = new CardController(cardsContainer, onDataChange, onViewChange, onCommentDataDelete, onCommentDataAdd, onUserDetailsDataChange, api);
+
     cardController.render(card, ModeView.DEFAULT);
 
     return cardController;
@@ -95,6 +96,7 @@ export default class PageController {
     const cards = this._cardsModel.getCards();
     const allCards = this._cardsModel.getCardsAll();
     const isCards = cards.length > 0;
+
     Render.remove(this._loadingCardsComponent);
 
     if (!isCards) {
@@ -106,12 +108,12 @@ export default class PageController {
 
     this._renderCards(cards.slice(0, this._showingCardsAmount));
     this._renderExtraCards(allCards);
-
     this._renderShowMoreButton();
   }
 
   _renderCards(cards) {
     const newCards = renderCards(this._mainCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, this._onUserDetailsDataChange, this._api);
+
     this._showedCardControllers = this._showedCardControllers.concat(newCards);
     this._showingCardsAmount = this._showedCardControllers.length;
   }
@@ -119,6 +121,7 @@ export default class PageController {
   _renderExtraCards(cards) {
     const newExtraCardsRating = renderExtraCards(this._topRatedCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, this._onUserDetailsDataChange, `totalRating`, this._api);
     const newExtraCardsComment = renderExtraCards(this._mostCommentedCardsContainer, cards, this._onDataChange, this._onViewChange, this._onCommentDataDelete, this._onCommentDataAdd, this._onUserDetailsDataChange, `comments`, this._api);
+
     this._showedExtraCardControllers = this._showedExtraCardControllers.concat(newExtraCardsRating, newExtraCardsComment);
   }
 
@@ -206,7 +209,9 @@ export default class PageController {
 
     if (isSuccessCommentDataDelete) {
       const newListComments = cardController.deleteComment(commentId);
+
       this._updateCards(this._showingCardsAmount);
+
       cardController.render(card, ModeView.DETAILS);
       cardController.renderUpdatedComments(newListComments);
     }
@@ -226,8 +231,10 @@ export default class PageController {
     const isSuccess = this._cardsModel.updateCard(card.id, newDataCard);
 
     if (isSuccess) {
-      this._updateCards(this._showingCardsAmount);
       const newListComments = cardController.deleteComment();
+
+      this._updateCards(this._showingCardsAmount);
+
       cardController.render(newDataCard, ModeView.DETAILS);
       cardController.renderUpdatedComments(newListComments);
     }
@@ -245,6 +252,7 @@ export default class PageController {
 
   _isErrorDataChange(cardController, card, modeRequest = ``, userRatingId = ``) {
     const newListComments = cardController.deleteComment();
+
     cardController.render(card, ModeView.DETAILS);
     cardController.renderUpdatedComments(newListComments);
     cardController.shake(modeRequest, userRatingId);
@@ -279,10 +287,13 @@ export default class PageController {
     } else {
       Render.remove(this._showMoreButtonComponent);
     }
-
   }
 
   _onFilterChange() {
     this._updateCards(ShowingCardsAmount.ON_START);
+  }
+
+  preventSortDefault() {
+    this._sortComponent.setSortTypeDefault();
   }
 }
