@@ -16,6 +16,7 @@ export default class Sort extends AbstractComponent {
     super();
     this._currentSortType = SortType.DEFAULT;
   }
+
   getTemplate() {
     return createSortingTemplate();
   }
@@ -43,5 +44,16 @@ export default class Sort extends AbstractComponent {
 
       handler(this._currentSortType);
     });
+  }
+
+  setSortTypeDefault() {
+    const sortDefault = this.getElement().querySelector(`a[data-sort-type="${SortType.DEFAULT}"]`);
+
+    this._currentSortType = SortType.DEFAULT;
+
+    this.getElement().querySelector(`.sort__button--active`)
+      .classList.remove(`sort__button--active`);
+
+    sortDefault.classList.add(`sort__button--active`);
   }
 }

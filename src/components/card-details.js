@@ -39,8 +39,8 @@ const createUserRatingMarkup = (maxRating, userRating, externalData) => {
     .map((markup, i) => {
       markup = (
         `<input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${i + 1}"
-          id="rating-${i + 1}" ${Common.checksBoolean((i === checkedInput - 1), `checked`)} ${isBlockRadio}>
-        <label ${Common.checksBoolean((i === checkedInput - 1), inputStyleOnError)} class="film-details__user-rating-label" for="rating-${i + 1}">${i + 1}</label>`
+          id="rating-${i + 1}" ${i === checkedInput - 1 ? `checked` : ``} ${isBlockRadio}>
+        <label ${i === checkedInput - 1 ? inputStyleOnError : ``} class="film-details__user-rating-label" for="rating-${i + 1}">${i + 1}</label>`
       );
       return markup;
     })
@@ -324,6 +324,7 @@ export default class CardDetails extends AbstractSmartComponent {
 
   setData(data) {
     this._externalData = Object.assign({}, DefaultData, data);
+
     this.reRender();
     this.renderCommentsMarkup(this._comments);
   }
@@ -376,6 +377,7 @@ export default class CardDetails extends AbstractSmartComponent {
 
   _getCommentData(form) {
     const formData = new FormData(form);
+
     formData.emotion = this._emotion ? this._emotion : `smile`;
 
     return formData;
@@ -402,6 +404,7 @@ export default class CardDetails extends AbstractSmartComponent {
 
     element.querySelector(`.form-details__middle-container`)
       .addEventListener(`click`, (evt) => {
+
         if (evt.target.tagName !== `BUTTON`) {
           return;
         }
@@ -422,6 +425,7 @@ export default class CardDetails extends AbstractSmartComponent {
 
     element.querySelector(`.film-details__emoji-list`)
       .addEventListener(`click`, (evt) => {
+
         if (evt.target.tagName === `INPUT`) {
           this._emotion = evt.target.value;
 
@@ -440,6 +444,7 @@ export default class CardDetails extends AbstractSmartComponent {
   setUserDetailsClickHandler(handler) {
     this.getElement().querySelector(`.form-details__middle-container`)
       .addEventListener(`click`, (evt) => {
+
         if (evt.target.tagName !== `INPUT`) {
           return;
         }

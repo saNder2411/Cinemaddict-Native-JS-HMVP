@@ -68,7 +68,6 @@ const createStatsTemplate = (option = {}) => {
 export default class Statistics extends AbstractSmartComponent {
   constructor(cards, dateFrom, dateTo, rank) {
     super();
-
     this._cards = cards;
     this._dateFrom = dateFrom;
     this._dateTo = dateTo;
@@ -77,6 +76,7 @@ export default class Statistics extends AbstractSmartComponent {
 
     this._renderChart();
   }
+
   getTemplate() {
     return createStatsTemplate({
       cards: this._cards,
@@ -105,13 +105,11 @@ export default class Statistics extends AbstractSmartComponent {
     this._rank = rank;
 
     super.reRender();
-
     this._renderChart();
   }
 
   show() {
     super.show();
-
     this.reRender(this._cards, this._dateFrom, this._dateTo, this._rank);
   }
 
@@ -126,9 +124,7 @@ export default class Statistics extends AbstractSmartComponent {
         }
 
         this._dateFrom = DateById[evt.target.id];
-
         this.reRender(this._cards, this._dateFrom, this._dateTo, this._rank);
-
         this._setActiveItem(evt.target.id);
       });
   }

@@ -5,7 +5,6 @@ export default class Cards {
   constructor() {
     this._cards = [];
     this._activeFilterType = FilterType.ALL;
-
     this._dataChangeHandlers = [];
     this._filterChangeHandlers = [];
   }
@@ -20,11 +19,13 @@ export default class Cards {
 
   setCards(cards) {
     this._cards = Array.from(cards);
+
     this._callHandlers(this._dataChangeHandlers);
   }
 
   setFilter(filterType) {
     this._activeFilterType = filterType;
+
     this._callHandlers(this._filterChangeHandlers);
   }
 
