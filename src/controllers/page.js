@@ -165,17 +165,17 @@ export default class PageController {
     this._renderShowMoreButton();
   }
 
-  _isSuccessDataChange(cardController, card, newDataCard) {
-    const isSuccess = this._cardsModel.updateCard(card.id, newDataCard);
+  _isSuccessDataChange(cardController, card, newCard) {
+    const isSuccess = this._cardsModel.updateCard(card.id, newCard);
 
     if (isSuccess) {
       this._updateCards(this._showingCardsAmount);
-      cardController.render(newDataCard, ModeView.DEFAULT);
+      cardController.render(newCard, ModeView.DEFAULT);
     }
   }
 
-  _onDataChange(cardController, card, newDataCard) {
-    this._api.updateCard(card.id, newDataCard)
+  _onDataChange(cardController, card, modDataCard) {
+    this._api.updateCard(card.id, modDataCard)
       .then((cardModel) => {
         this._isSuccessDataChange(cardController, card, cardModel);
       })
@@ -184,23 +184,23 @@ export default class PageController {
       });
   }
 
-  _isSuccessCommentDataAdd(cardController, oldDataCard, newDataCard, newComments) {
-    const isSuccessCardDataChange = this._cardsModel.updateCard(oldDataCard.id, newDataCard);
+  _isSuccessCommentDataAdd(cardController, oldCard, newCard, newComments) {
+    const isSuccessCardDataChange = this._cardsModel.updateCard(oldCard.id, newCard);
 
     if (isSuccessCardDataChange) {
       this._updateCards(this._showingCardsAmount);
-      cardController.render(newDataCard, ModeView.DETAILS);
+      cardController.render(newCard, ModeView.DETAILS);
       cardController.renderUpdatedComments(newComments);
     }
   }
 
-  _onCommentDataAdd(cardController, oldDataCard, newCommentData) {
-    this._api.addComment(oldDataCard.id, newCommentData)
+  _onCommentDataAdd(cardController, oldCard, newCommentData) {
+    this._api.addComment(oldCard.id, newCommentData)
       .then((result) => {
-        this._isSuccessCommentDataAdd(cardController, oldDataCard, result.card, result.comments);
+        this._isSuccessCommentDataAdd(cardController, oldCard, result.card, result.comments);
       })
       .catch(() => {
-        this._isErrorDataChange(cardController, oldDataCard, ModeRequest.isCommentAdd);
+        this._isErrorDataChange(cardController, oldCard, ModeRequest.isCommentAdd);
       });
   }
 

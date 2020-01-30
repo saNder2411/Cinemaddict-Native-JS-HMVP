@@ -21,7 +21,7 @@ const checkStatus = (response) => {
   }
 };
 
-export default class API {
+export default class Api {
   constructor(endPoint, authorization) {
     this._endPoint = endPoint;
     this._authorization = authorization;
@@ -37,27 +37,37 @@ export default class API {
       });
   }
 
+  sync(data) {
+    return this._load({
+      url: `movies/sync`,
+      method: Method.POST,
+      headers: new Headers({ 'Content-Type': `application/json` }),
+      body: JSON.stringify(data)
+    })
+      .then((response) => response.json());
+  }
+
   getCards() {
     return this._load({ url: `movies` })
       .then((response) => response.json())
       .then(CardModel.parseCards);
   }
 
-  getComments(cardId) {
-    return this._load({ url: `comments/${cardId}` })
-      .then((response) => response.json())
-      .then(CommentModel.parseComments);
-  }
-
-  updateCard(oldCardId, newCard) {
+  updateCard(oldCardId, modDataCard) {
     return this._load({
       url: `movies/${oldCardId}`,
       method: Method.PUT,
       headers: new Headers({ 'Content-Type': `application/json` }),
-      body: JSON.stringify(newCard.toRAW()),
+      body: JSON.stringify(modDataCard.toRAW()),
     })
       .then((response) => response.json())
       .then(CardModel.parseCard);
+  }
+
+  getComments(cardId) {
+    return this._load({ url: `comments/${cardId}` })
+      .then((response) => response.json())
+      .then(CommentModel.parseComments);
   }
 
   addComment(cardId, newCommentData) {
