@@ -41,7 +41,8 @@ export default class Store {
 
   getComments() {
     try {
-      return JSON.parse(this._storage.getItem(this._commentsStoreKey));
+      const soreComments = this._storage.getItem(this._commentsStoreKey);
+      return soreComments ? JSON.parse(soreComments) : {};
     } catch (err) {
       return {};
     }
