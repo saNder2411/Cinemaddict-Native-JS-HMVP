@@ -387,20 +387,20 @@ export default class CardDetails extends AbstractSmartComponent {
     const element = this.getElement();
 
     element.querySelector(`.film-details__control-label--watchlist`)
-      .addEventListener(`click`, () => {
+      .addEventListener(`click`, Common.debounce(() => {
         this._watchlist = !this._watchlist;
 
         this.reRender();
         this.renderCommentsMarkup(this._comments);
-      });
+      }));
 
     element.querySelector(`.film-details__control-label--watched`)
-      .addEventListener(`click`, () => {
+      .addEventListener(`click`, Common.debounce(() => {
         this._alreadyWatched = !this._alreadyWatched;
 
         this.reRender();
         this.renderCommentsMarkup(this._comments);
-      });
+      }));
 
     element.querySelector(`.form-details__middle-container`)
       .addEventListener(`click`, (evt) => {
@@ -416,12 +416,12 @@ export default class CardDetails extends AbstractSmartComponent {
       });
 
     element.querySelector(`.film-details__control-label--favorite`)
-      .addEventListener(`click`, () => {
+      .addEventListener(`click`, Common.debounce(() => {
         this._favorite = !this._favorite;
 
         this.reRender();
         this.renderCommentsMarkup(this._comments);
-      });
+      }));
 
     element.querySelector(`.film-details__emoji-list`)
       .addEventListener(`click`, (evt) => {
@@ -443,7 +443,7 @@ export default class CardDetails extends AbstractSmartComponent {
 
   setUserDetailsClickHandler(handler) {
     this.getElement().querySelector(`.form-details__middle-container`)
-      .addEventListener(`click`, (evt) => {
+      .addEventListener(`click`, Common.debounce((evt) => {
 
         if (evt.target.tagName !== `INPUT`) {
           return;
@@ -458,7 +458,7 @@ export default class CardDetails extends AbstractSmartComponent {
         };
 
         handler(userDetailsData, evt.target.id);
-      });
+      }));
 
     this._userDetailsHandler = handler;
   }
