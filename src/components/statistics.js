@@ -11,8 +11,8 @@ const DateById = {
 };
 
 const createStatsTemplate = (option = {}) => {
-  const { cards, rank } = option;
-  const { alreadyWatched, topGenre, allRuntime } = StatsUtils.calcStatsDefaultData(cards);
+  const {cards, rank} = option;
+  const {alreadyWatched, topGenre, allRuntime} = StatsUtils.calcStatsDefaultData(cards);
   const allDuration = Common.getTimeInHoursAndMinutes(allRuntime);
 
   return (

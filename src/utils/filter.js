@@ -1,4 +1,4 @@
-import { FilterType } from '../const.js';
+import {FilterType} from '../const.js';
 
 export default class Filter {
   static calcFilterValues(cards, property) {
@@ -9,7 +9,7 @@ export default class Filter {
       sum[favorite] = (card.userDetails[favorite]) ? ++sum[favorite] : sum[favorite];
 
       return sum;
-    }, { [watchlist]: 0, [alreadyWatched]: 0, [favorite]: 0 });
+    }, {[watchlist]: 0, [alreadyWatched]: 0, [favorite]: 0});
   }
 
   static getWatchlistCards(cards) {

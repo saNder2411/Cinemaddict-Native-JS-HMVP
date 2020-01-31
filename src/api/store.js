@@ -16,7 +16,7 @@ export default class Store {
   setItem(key, value) {
     const store = this.getAll();
 
-    this._storage.setItem(this._storeKey, JSON.stringify(Object.assign({}, store, { [key]: value })));
+    this._storage.setItem(this._storeKey, JSON.stringify(Object.assign({}, store, {[key]: value})));
   }
 
   removeItem(key) {
@@ -34,7 +34,7 @@ export default class Store {
       const indexDeleteComment = card.comments.indexOf(commentId);
       if (indexDeleteComment !== -1) {
         card.comments.splice(indexDeleteComment, 1);
-        this.setItem(card.id, Object.assign({}, card, { offline: true }));
+        this.setItem(card.id, Object.assign({}, card, {offline: true}));
       }
     });
   }
@@ -51,7 +51,7 @@ export default class Store {
   setCommentItem(key, value) {
     const storeComments = this.getComments();
 
-    this._storage.setItem(this._commentsStoreKey, JSON.stringify(Object.assign({}, storeComments, { [key]: value })));
+    this._storage.setItem(this._commentsStoreKey, JSON.stringify(Object.assign({}, storeComments, {[key]: value})));
   }
 
   removeCommentItem(commentId) {

@@ -1,6 +1,6 @@
 import FilterComponent from '../components/filter.js';
 import StatisticsComponent from '../components/statistics.js';
-import { FilterType } from '../const.js';
+import {FilterType} from '../const.js';
 import Render from '../utils/render.js';
 import Filter from '../utils/filter.js';
 import Common from '../utils/common.js';
