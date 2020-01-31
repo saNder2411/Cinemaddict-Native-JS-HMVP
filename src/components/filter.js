@@ -1,9 +1,9 @@
 import AbstractComponent from './abstract-component.js';
-import { FilterType } from '../const.js';
+import {FilterType} from '../const.js';
 
 
 const createFiltersTemplate = (filterValues) => {
-  const { watchlist, alreadyWatched, favorite } = filterValues;
+  const {watchlist, alreadyWatched, favorite} = filterValues;
 
   return (
     `<nav class="main-navigation">

@@ -103,7 +103,7 @@ const createCardDetailsTemplate = (card, option = {}) => {
       personalRating,
     },
   } = card;
-  const { watchlist, alreadyWatched, favorite, emotion, currentCommentText, externalData } = option;
+  const {watchlist, alreadyWatched, favorite, emotion, currentCommentText, externalData} = option;
   const userRating = alreadyWatched ? personalRating : ``;
   const formateDate = `${moment(date).format(`DD MMMM YYYY`)}`;
   const duration = Common.getTimeInHoursAndMinutes(runtime);

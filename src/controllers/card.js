@@ -2,7 +2,7 @@ import CardComponent from '../components/card.js';
 import CardDetailsComponent from '../components/card-details.js';
 import CardModel from '../models/card.js';
 import Render from '../utils/render';
-import { ModeView, ModeRequest } from '../const.js';
+import {ModeView, ModeRequest} from '../const.js';
 
 const SHAKE_ANIMATION_TIMEOUT = 0.6;
 
@@ -78,13 +78,13 @@ export default class CardController {
     this._cardDetailsComponent.setSubmitFormHandler((formDataComment) => {
       const newCommentData = this._parseFormCommentData(formDataComment);
 
-      this._cardDetailsComponent.setData({ request: true });
+      this._cardDetailsComponent.setData({request: true});
 
       this._onCommentDataAdd(this, card, newCommentData);
     });
 
     this._cardDetailsComponent.setDeleteCommentButtonClickHandler((commentId) => {
-      this._cardDetailsComponent.setData({ deleteCommentId: commentId });
+      this._cardDetailsComponent.setData({deleteCommentId: commentId});
 
       this._onCommentDataDelete(this, card, commentId);
     });
@@ -93,7 +93,7 @@ export default class CardController {
       const newCard = CardModel.clone(card);
 
       newCard.userDetails = Object.assign({}, newCard.userDetails, userDetailsData);
-      this._cardDetailsComponent.setData({ request: true });
+      this._cardDetailsComponent.setData({request: true});
 
       this._onUserDetailsDataChange(this, card, newCard, userRatingId);
     });

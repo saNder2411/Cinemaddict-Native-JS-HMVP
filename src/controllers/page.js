@@ -5,7 +5,7 @@ import LoadingCardsComponent from '../components/loading-cards.js';
 import CardsContainerComponent from '../components/cards-container.js';
 import ShowMoreButtonComponent from '../components/show-more-button.js';
 import CardController from './card.js';
-import { SortType, ModeView, ModeRequest } from '../const.js';
+import {SortType, ModeView, ModeRequest} from '../const.js';
 
 const ShowingCardsAmount = {
   ON_START: 5,

@@ -22,4 +22,4 @@ const FilterType = {
   STATISTICS: `statistics`,
 };
 
-export { SortType, ModeView, FilterType, ModeRequest };
+export {SortType, ModeView, FilterType, ModeRequest};

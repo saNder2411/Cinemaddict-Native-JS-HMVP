@@ -34,10 +34,10 @@ export default class Provider {
         });
     }
 
-    const fakeUpdateCard = Card.parseCard(Object.assign({}, modCard.toRAW(), { id: oldCardId }));
+    const fakeUpdateCard = Card.parseCard(Object.assign({}, modCard.toRAW(), {id: oldCardId}));
 
     this._isSynchronized = false;
-    this._store.setItem(oldCardId, Object.assign({}, fakeUpdateCard.toRAW(), { offline: true }));
+    this._store.setItem(oldCardId, Object.assign({}, fakeUpdateCard.toRAW(), {offline: true}));
 
     return Promise.resolve(fakeUpdateCard);
   }
@@ -86,14 +86,14 @@ export default class Provider {
     const storeCard = Object.values(this._store.getAll()).find((card) => card.id === cardId);
     const storeCardComments = this._getCommentsCardFromStore(cardId);
     const fakeNewCommentId = nanoid();
-    const fakeNewComment = Comment.parseComment(Object.assign({}, { id: fakeNewCommentId, author: `User Name` }, newCommentData));
+    const fakeNewComment = Comment.parseComment(Object.assign({}, {id: fakeNewCommentId, author: `User Name`}, newCommentData));
 
     storeCard.comments.push(fakeNewCommentId);
     storeCardComments.push(fakeNewComment);
 
     this._isSynchronized = false;
-    this._store.setItem(cardId, Object.assign({}, storeCard, { offline: true }));
-    this._store.setCommentItem(fakeNewCommentId, Object.assign({}, fakeNewComment.toRAW(), { offline: true }));
+    this._store.setItem(cardId, Object.assign({}, storeCard, {offline: true}));
+    this._store.setCommentItem(fakeNewCommentId, Object.assign({}, fakeNewComment.toRAW(), {offline: true}));
     const result = {
       card: Card.parseCard(storeCard),
       comments: storeCardComments,
