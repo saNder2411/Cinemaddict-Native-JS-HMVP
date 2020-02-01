@@ -275,12 +275,12 @@ export default class CardDetails extends AbstractSmartComponent {
   renderCommentsMarkup(comments) {
     const commentsContainer = this.getElement().querySelector(`.film-details__comments-list`);
     this._comments = comments;
-    this._disinfectsCommentText(comments);
+    this._escapesCommentText(comments);
 
     const commentsMarkup = comments.map((it) => {
       const text = he.encode(it.comment);
       const commentDate = moment(it.date).fromNow();
-      const isDelete = it.id === this._externalData.idDeleteComment;
+      const isDelete = it.id === this._externalData.deleteCommentId;
 
       return (
         `<li class="film-details__comment">
@@ -316,7 +316,7 @@ export default class CardDetails extends AbstractSmartComponent {
     return this._comments;
   }
 
-  _disinfectsCommentText(comments) {
+  _escapesCommentText(comments) {
     comments.forEach((it) => {
       it.comment = he.encode(it.comment);
     });

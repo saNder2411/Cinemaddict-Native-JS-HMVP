@@ -13,7 +13,7 @@ export default class Provider {
     if (this._isOnLine()) {
       return this._api.getCards()
         .then((cards) => {
-          cards.forEach((card) => this._store.setItem(card.id, card.toRAW()));
+          cards.forEach((card) => this._store.setItem(card.id, card.getModelToRAW()));
           return cards;
         });
     }
@@ -29,15 +29,15 @@ export default class Provider {
     if (this._isOnLine()) {
       return this._api.updateCard(oldCardId, modCard)
         .then((newCard) => {
-          this._store.setItem(newCard.id, newCard.toRAW());
+          this._store.setItem(newCard.id, newCard.getModelToRAW());
           return newCard;
         });
     }
 
-    const fakeUpdateCard = Card.parseCard(Object.assign({}, modCard.toRAW(), {id: oldCardId}));
+    const fakeUpdateCard = Card.parseCard(Object.assign({}, modCard.getModelToRAW(), {id: oldCardId}));
 
     this._isSynchronized = false;
-    this._store.setItem(oldCardId, Object.assign({}, fakeUpdateCard.toRAW(), {offline: true}));
+    this._store.setItem(oldCardId, Object.assign({}, fakeUpdateCard.getModelToRAW(), {offline: true}));
 
     return Promise.resolve(fakeUpdateCard);
   }
@@ -61,7 +61,7 @@ export default class Provider {
     if (this._isOnLine()) {
       return this._api.getComments(cardId)
         .then((comments) => {
-          comments.forEach((comment) => this._store.setCommentItem(comment.id, comment.toRAW()));
+          comments.forEach((comment) => this._store.setCommentItem(comment.id, comment.getModelToRAW()));
           return comments;
         });
     }
@@ -75,9 +75,9 @@ export default class Provider {
     if (this._isOnLine()) {
       return this._api.addComment(cardId, newCommentData)
         .then((data) => {
-          this._store.setItem(data.card.id, data.card.toRAW());
+          this._store.setItem(data.card.id, data.card.getModelToRAW());
 
-          data.comments.forEach((comment) => this._store.setCommentItem(comment.id, comment.toRAW()));
+          data.comments.forEach((comment) => this._store.setCommentItem(comment.id, comment.getModelToRAW()));
 
           return data;
         });
@@ -93,7 +93,7 @@ export default class Provider {
 
     this._isSynchronized = false;
     this._store.setItem(cardId, Object.assign({}, storeCard, {offline: true}));
-    this._store.setCommentItem(fakeNewCommentId, Object.assign({}, fakeNewComment.toRAW(), {offline: true}));
+    this._store.setCommentItem(fakeNewCommentId, Object.assign({}, fakeNewComment.getModelToRAW(), {offline: true}));
     const result = {
       card: Card.parseCard(storeCard),
       comments: storeCardComments,
@@ -125,9 +125,11 @@ export default class Provider {
 
       return this._api.sync(storeCards)
         .then((response) => {
-          storeCards.filter((card) => card.offline)
+          storeCards
             .forEach((card) => {
-              this._store.removeItem(card.id);
+              if (card.offline) {
+                this._store.removeItem(card.id);
+              }
             });
 
           storeComments.forEach((comment) => {

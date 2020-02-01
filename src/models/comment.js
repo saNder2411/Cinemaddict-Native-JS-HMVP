@@ -7,7 +7,7 @@ export default class Comment {
     this.emotion = data[`emotion`];
   }
 
-  toRAW() {
+  getModelToRAW() {
     return {
       "id": this.id,
       "author": this.author,

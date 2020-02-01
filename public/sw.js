@@ -52,7 +52,7 @@ self.addEventListener(`activate`, (evt) => {
 });
 
 const fetchHandler = (evt) => {
-  const { request } = evt;
+  const {request} = evt;
 
   evt.respondWith(caches.match(request)
     .then((cacheResponse) => {

@@ -194,12 +194,12 @@ export default class CardController {
     };
 
     this._cardDetailsComponent.setData(externalData);
-    this._cardDetailsComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT}s`;
-    this._cardComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT}s`;
+    this._cardDetailsComponent.setAnimation(`shake ${SHAKE_ANIMATION_TIMEOUT}s`);
+    this._cardComponent.setAnimation(`shake ${SHAKE_ANIMATION_TIMEOUT}s`);
 
     setTimeout(() => {
-      this._cardDetailsComponent.getElement().style.animation = `none`;
-      this._cardComponent.getElement().style.animation = ``;
+      this._cardDetailsComponent.setAnimation(`none`);
+      this._cardComponent.setAnimation();
     }, SHAKE_ANIMATION_TIMEOUT * 1000);
   }
 }

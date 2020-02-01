@@ -16,9 +16,9 @@ const ResponseStatusOkPeriod = {
 const checkStatus = (response) => {
   if (response.status >= ResponseStatusOkPeriod.MIN && response.status < ResponseStatusOkPeriod.MAX) {
     return response;
-  } else {
-    throw new Error(`${response.status}: ${response.statusText}`);
   }
+
+  throw new Error(`${response.status}: ${response.statusText}`);
 };
 
 export default class Api {
@@ -58,7 +58,7 @@ export default class Api {
       url: `movies/${oldCardId}`,
       method: Method.PUT,
       headers: new Headers({'Content-Type': `application/json`}),
-      body: JSON.stringify(modDataCard.toRAW()),
+      body: JSON.stringify(modDataCard.getModelToRAW()),
     })
       .then((response) => response.json())
       .then(CardModel.parseCard);

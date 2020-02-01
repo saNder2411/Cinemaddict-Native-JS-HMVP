@@ -23,6 +23,10 @@ export default class AbstractComponent {
     return this._element;
   }
 
+  setAnimation(value = ``) {
+    this.getElement().style.animation = value;
+  }
+
   removeElement() {
     this._element = null;
   }

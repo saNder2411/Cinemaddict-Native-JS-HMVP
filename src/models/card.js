@@ -25,7 +25,7 @@ export default class Card {
     this.userDetails.favorite = data[`user_details`][`favorite`];
   }
 
-  toRAW() {
+  getModelToRAW() {
     return {
       "id": this.id,
       "comments": this.comments,
@@ -65,6 +65,6 @@ export default class Card {
   }
 
   static clone(card) {
-    return new Card(card.toRAW());
+    return new Card(card.getModelToRAW());
   }
 }
