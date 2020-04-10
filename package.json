@@ -2,16 +2,20 @@
   "name": "Cinemaddict",
   "version": "1.0.0",
   "private": true,
+  "homepage": "http://saNder2411.github.io/cinemaddict",
   "description": "Личный проект «Киноман» от HTML Academy",
   "scripts": {
     "eslint": "eslint src/**/*.js",
     "test": "npm run eslint",
     "build": "webpack",
-    "start": "webpack-dev-server --open"
+    "start": "webpack-dev-server --open",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "devDependencies": {
     "eslint": "6.1.0",
     "eslint-config-htmlacademy": "0.5.2",
+    "gh-pages": "2.2.0",
     "moment-locales-webpack-plugin": "1.1.2",
     "webpack": "4.41.2",
     "webpack-cli": "3.3.10",

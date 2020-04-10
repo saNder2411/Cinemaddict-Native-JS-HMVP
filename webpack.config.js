@@ -6,11 +6,11 @@ module.exports = {
   entry: `./src/main.js`,
   output: {
     filename: `bundle.js`,
-    path: path.join(__dirname, `public`)
+    path: path.join(__dirname, `build`)
   },
   devtool: `source-map`,
   devServer: {
-    contentBase: path.join(__dirname, `public`),
+    contentBase: path.join(__dirname, `build`),
     compress: true,
     watchContentBase: true
   },
